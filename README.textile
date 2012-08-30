@@ -1,0 +1,48 @@
+h1. Treb - a PHP mini-framework
+
+bq. "Treb" is short for "Trebuchet":http://en.wikipedia.org/wiki/Trebuchet, a medieval siege weapon that was of very simple design & concept, yet elegant in it's action.  It was a tool for 'quickly getting things done'  (As long as the thing at hand, was destroying a castle).  In this way, it mimics the design philosophies of this framework.
+
+h2. Background
+
+Treb is an amalgamation of experience in building custom frameworks of similar nature at numerous past employers.  In each of these cases, the goal was a custom application with specific scalability needs, and traditional PHP frameworks didn't fit the bill.
+
+When working at mojoLive, this framework was built from scratch, and in hopes of not having to write 'yet another framework' when moving on to another company.  Eli White asked permission to open source the core framework that was written for mojoLive.
+
+Treb is the result of that (and many hours of scrubbing all specific-to-mojoLive aspects out of the code).  It's a start, and will continue to be cleaned up and enhanced as time goes on.  There will most likely still be parts of how this framework operates, that are rather specific to it's original purpose's needs, that will need made more generic, but we will cross those roads as they approach us.
+
+h2. Goals / Purpose / Philosophy
+
+Treb is not a fully fleshed out framework like many, that tries to give you a solution to every path you might encounter.  Because in my experience, those frameworks do a great job of taking the 90% mark of most web projects, and making them SUPER easy.  But in the process, they don't really help you with that difficult 10% ... the parts specific to your business and how your application needs to grow.   In fact, they can hinder you, if a style of framework that requires you to do things the 'framework way', and that way doesn't work for you.  You find yourself hacking the framework just to grow.
+
+Treb is also not a micro-framework, the new style of super-compact frameworks that strive only to do some basic MVC routing for you, and then leave you to do everything yourself.
+
+Treb instead is designed to be somewhere right down the middle.  It's as minimal as it can be, to do basic MVC routing and provide you a standard directory structure to start building off of.  But at the same time, it provides a library of what I consider 'crucial' aspects for building a secure, scalable web application, such as input filtering & output escaping.  More importantly, it provides a simple data model with built in write-through data caching, and data set caching features.
+
+It is however, somewhat opinionated about those.  You certainly aren't 'required' to use the data models and/or caching layers.  You can rip those out and do whatever you want.  But if you do use them, they operate in a certain way, and assume a PDO-accessible SQL server, and a memcached compliant cache server.
+
+In the end, I'm not sure if anyone would really see Treb as a framework that you'd use to 'build an application on top of'.  But instead, as a starting point to build your application with.  You'll need and want to extend it, to bend it to match what you are needing to do.  But it should give you a major leg up on building that 'from scratch' application, without starting truly from scratch.
+
+h2. Technology
+
+Treb is not 'well architected' by modern definitions of this, it wasn't meant to be.  It was meant to be a simple, functional system.  It doesn't do dependency injection, it doesn't use namespaces, it uses the singleton & multiton patterns in specifically chosen places and it has zero tests.  It simply was made as a simple, useable, and extendable framework.
+
+It does however require PHP 5.3+, as it uses some advanced aspects of PHP, and will move to PHP 5.4 in the near future.
+
+h2. Features
+
+As mentioned there are a number of things that this framework attempts to do for you, a quick overview of them (but not exhaustive by any means) is:
+
+* MVC pattern
+* Automatic routing based upon directory structure & method names
+* Caching layer
+* DB/Model layer, with easy model creation & automatic write-through caching
+* Data Filtering, Output Escaping & Easy CSRF protection
+* Easy to use media (CSS/JS) versioning
+* A sample deployment script (From SVN to Remote Servers)
+* Cookie handling
+* PHP-based Views w/ Helper methods for common tasks
+* Numerous other small things ...
+
+h2. Documentation
+
+The best documentation in this case, is to read the code, it's well documented and should be therefore easy to extend.  You should start by reading this "Basic Documentation":https://github.com/EliW/treb/blob/master/ops/docs/framework.textile that is provided, but it doesn't cover all aspects of the framework at the moment.  After that, dive in, "download the source":https://github.com/EliW/treb/downloads, and see what you can find.

@@ -1,12 +1,12 @@
-h1. Mojo Code Documentation
+h1. Treb Code Documentation
 
-bq. This documentation is specifically designed to be an overview of the Mojo mini-framework system that has been created here.  Making it, hopefully, easy for a new programmer to familiarize themselves with the basics of the system and understand the flow of the code & how parts of it were intended to be used.  
+bq. This documentation is specifically designed to be an overview of the Treb mini-framework system that has been created here.  Making it, hopefully, easy for a new programmer to familiarize themselves with the basics of the system and understand the flow of the code & how parts of it were intended to be used.  
 
-bq. This is *NOT* intended to serve as complete documentation, as I believe deeply in code comments for that.  You can see that via browsing the source, or via the automatically generated phpdoc pages at: "http://docs.mojolive.com/":http://docs.mojolive.com/
+bq. This is *NOT* intended to serve as complete documentation, as I believe deeply in code comments for that.  You can see that via browsing the source, or via the automatically generated phpdoc pages.
 
 h2. Basic Routing
 
-The Mojo framework has automatic routing built in.  Any request that comes in that isn't for a media file (js/css/img/font), is automatically routed into our bootstrap. From that, it looks at the URL that was provided, and attempts to find the appropriate controller to handle it.  No configuration of a routing file is needed.
+The Treb framework has automatic routing built in.  Any request that comes in that isn't for a media file (js/css/img/font), is automatically routed into our bootstrap. From that, it looks at the URL that was provided, and attempts to find the appropriate controller to handle it.  No configuration of a routing file is needed.
 
 It's actually very flexible in how it handles the routing, allowing the code structure underneath the system to change as needed, and be organized in whatever manner makes sense for that particular section of the website. All controllers are stored in the /controllers directory & related subdirectories, and so we will be looking there.  Controllers are always named in the @[name].controller.php@ naming style, extended from the main Controller class, and the methods within each file are @exec[name]()@.
 
@@ -39,7 +39,7 @@ Do note that if you use this feature, that *ANYTHING* sent after the path will b
 
 h2. Data Filtering
 
-One of the tenets of good web programming is FIEO (Filter Input, Escape Output).  The Mojo Framework has functionality for this automatically built into the framework.  For any of your action endpoints (@execNAME()@ methods), by default no data is passed into them, and all normal external data sources (such as @$_POST@, @$_GET@, etc) are destroyed/wiped by the time your action runs.  So unless you do anything, you will receive no data.  The ultimate in filtering.
+One of the tenets of good web programming is FIEO (Filter Input, Escape Output).  The Treb Framework has functionality for this automatically built into the framework.  For any of your action endpoints (@execNAME()@ methods), by default no data is passed into them, and all normal external data sources (such as @$_POST@, @$_GET@, etc) are destroyed/wiped by the time your action runs.  So unless you do anything, you will receive no data.  The ultimate in filtering.
 
 What is provided, therefore, is a filtering mechanism that allows you to not only specify what data fields you want to exist, but also to specify what kind of data should exist in each field.  The field is then filtered&sanitized for you, ensuring that the field always exists (no need for @isset()@ checks) and is a valid 'insert type' of data.
 
@@ -151,7 +151,7 @@ There are a number of other configuration options (properties) that you can set 
 
 h2. Using Cache
 
-The cache mechanism built for Mojo allows for fairly easy access, and later extensibility.  At the moment, it is essentially a write-through class for Memcached.  To access the cache, a helper function has been made that returns to you the Singleton instance of cache:  @cache()@
+The cache mechanism built for Treb allows for fairly easy access, and later extensibility.  At the moment, it is essentially a write-through class for Memcached.  To access the cache, a helper function has been made that returns to you the Singleton instance of cache:  @cache()@
 
 This allows you to very easily access the singleton and at the same time set or read a single variable.  So for example, to read in the value of the key 'user.12373', you need only do:
 
@@ -296,6 +296,3 @@ You can see a list of all predefined log severities in the top of the Log class 
 
 This is very useful to have debugging features in your code, that are normally turned off.  But when needed for live debugging, you can turn up the logging level for a while and watch what comes in the various log files.
 
-h2. Summary
-
-At this point just go read "http://docs.mojolive.com/":http://docs.mojolive.com/ for more details, or look in the code.
