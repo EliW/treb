@@ -1,0 +1,301 @@
+h1. Mojo Code Documentation
+
+bq. This documentation is specifically designed to be an overview of the Mojo mini-framework system that has been created here.  Making it, hopefully, easy for a new programmer to familiarize themselves with the basics of the system and understand the flow of the code & how parts of it were intended to be used.  
+
+bq. This is *NOT* intended to serve as complete documentation, as I believe deeply in code comments for that.  You can see that via browsing the source, or via the automatically generated phpdoc pages at: "http://docs.mojolive.com/":http://docs.mojolive.com/
+
+h2. Basic Routing
+
+The Mojo framework has automatic routing built in.  Any request that comes in that isn't for a media file (js/css/img/font), is automatically routed into our bootstrap. From that, it looks at the URL that was provided, and attempts to find the appropriate controller to handle it.  No configuration of a routing file is needed.
+
+It's actually very flexible in how it handles the routing, allowing the code structure underneath the system to change as needed, and be organized in whatever manner makes sense for that particular section of the website. All controllers are stored in the /controllers directory & related subdirectories, and so we will be looking there.  Controllers are always named in the @[name].controller.php@ naming style, extended from the main Controller class, and the methods within each file are @exec[name]()@.
+
+First of all, it tries to dive as many subdirectories deep as it can, to match the directories in the URL.  If it can't find them all, it tries to go as deep as possible.   Secondly, once it finds the deepest directory match that it can, it looks for one of two things.  Either a controller file with the name of the of the next remaining path element, and a method that matches that name.  Or a controller file with the name of the directory, and a method that matches the next remaining path element.
+
+Ok, that was really confusing I'm sure.  So let's just give an example.  If someone enters a URL such as: @/user/settings/email@ - The following controllers might exist that can handle this, and will be searched in the order given - If none of these match (or in some cases of a partial match), a 404 will be thrown for us:
+
+|_=. #|_=. File                                               |_=. Method      |_=. $allowExtra|
+|_=. 1|@/controllers/user/settings/email/email.controller.php@|@execEmail()@   |=.             |
+|_=. 2|@/controllers/user/settings/email.controller.php@      |@execEmail()@   |=.             |
+|_=. 3|@/controllers/user/settings/settings.controller.php@   |@execEmail()@   |=.             |
+|_=. 4|@/controllers/user/settings.controller.php@            |@execEmail()@   |=.             |
+|_=. 5|@/controllers/user/user.controller.php@                |@execSettings()@|=. yes         |
+|_=. 6|@/controllers/user/user.controller.php@                |@execUser()@    |=. yes         |
+|_=. 7|@/controllers/user.controller.php@                     |@execUser()@    |=. yes         |
+|_=. 8|@/controllers/home.controller.php@                     |@execUser()@    |=. yes         |
+|_=. 9|@/controllers/home.controller.php@                     |@execHome()@    |=. yes         |
+
+(Cases #8 and #9 are special examples.  If it can't find anything, it looks for @home.controller.php@ which is the default 'homepage' controller.  Typically this should be rarely used except for the homepage because of the powerful url overriding nature of it.)
+
+As you can see, this gives you great flexibility in how you structure your underlying controllers, and even allows you to restructure.  If you have an endpoint that's just a simple one page, it can just be a method in the parent's controller.  If it's more complicated, it can be moved into it's own directory, and as it grows it can become multiple directories and controllers.
+
+h3. $allowExtra
+
+I should explain allowExtra mentioned above now.  Inside of each controller file, there is a variable you can set, called @$allowExtra@, which is an array of endpoints in that controller that are allowed to have extra path information sent to them.  This allows you to take 'URL parameters' in a smooth mechanism, without writing mod_rewrite rules to handle them.
+
+Normally, without being listed as allowExtra, if an endpoint is found in the above manner, but there is extra path information available after it has been found, a 404 will be thrown since it wasn't an 'exact match'.  However, if the @$allowExtra@ array includes the name of that endpoint.  It will not only be accepted and executed.  But the additional path information will be parsed and passed into the @$this->args@ array (see Data Filtering below)
+
+Do note that if you use this feature, that *ANYTHING* sent after the path will be accepted and sent to your controller action.  Therefore it's up to *YOU* to handle looking at this, deciding if it's valid, and if you should throw a 404 in response to the data provided or not.  So you lose some automatic functionality by using this, but it allows you to have pretty URLs for otherwise parameterized data, such as @/user/EliW/profile@.  Which would be sent to the @execUser()@ action for you, and let you handle routing the EliW/profile yourself.
+
+h2. Data Filtering
+
+One of the tenets of good web programming is FIEO (Filter Input, Escape Output).  The Mojo Framework has functionality for this automatically built into the framework.  For any of your action endpoints (@execNAME()@ methods), by default no data is passed into them, and all normal external data sources (such as @$_POST@, @$_GET@, etc) are destroyed/wiped by the time your action runs.  So unless you do anything, you will receive no data.  The ultimate in filtering.
+
+What is provided, therefore, is a filtering mechanism that allows you to not only specify what data fields you want to exist, but also to specify what kind of data should exist in each field.  The field is then filtered&sanitized for you, ensuring that the field always exists (no need for @isset()@ checks) and is a valid 'insert type' of data.
+
+You do this via declaring a property in the controller class.  The name of the property matches the name of the action, and is of the form @$expect_NAME@.  So if your action was @execEmail()@, then your filter variable would be: @$expect_email@ (NOTE: The action names are case insensitive because of how PHP works.  However variable names are case sensitive in PHP.  Therefore all expect/filter names need to be an all lowercase version of the name.)
+
+Now the format of this property, is a nested set of arrays defining what data you really want.  The keys of the array are the names of various sources of data that you may want to receive from.  The current supported set of these is: 'post', 'get', 'cookie', 'env', 'server' & 'extra'.  Each of this corresponds to the PHP SuperGlobal that you would expect it to.  The 'extra' is the array of additional pathinfo discussed above in @$allowExtra@.
+
+Each key should then in turn refer to an array containing the keys you want retrieved, and what type of value you are expecting that to be, such as 'integer', 'float' or 'string'.  Other more custom data filter types also exist such as 'email', 'date', 'regex', and 'enum'.  And you can add your own in the future by editing @filter.php@ and adding in additional @assertNAME()@ methods.
+
+The framework then uses this expect configuration to in turn run filters on the data, and then provide you with the filtered/sanitized data via the @$this->args@ property.  Each data source will be a subproperty, such as @$this->args->post@.  Beyond that, the data will look like what you would expect.  So in the case of most superglobals, an array of keys/value pairs.
+
+Therefore, for our mythical user email settings page, we might find some data filtering that looks like this:
+
+<pre>
+public $expect_email = array(
+    'post' => array(
+        'username' => 'string',
+        'password' => 'string',
+        'new' => 'email',
+        'optout' => 'boolean',
+        'token' => 'hex',
+    )
+);
+public function execEmail() {
+    // Code to handle email settings
+} 
+</pre>
+
+Granted, this is a very basic example.  But hopefully gives the idea.  Now some of the more advanced filters allow for additional information to be given after a ':'.  So for example, we might want to configure 'username' to not just be a generic string, but only allow alphanumerics.  We could do that with the regex filter.  Also, perhaps for the 'optout' field, instead of a boolean, we are showing the user a dropdown with 3 options.  That can be handled via the 'enum' filter.  So we might rewrite the code to look like this:
+
+<pre>
+public $expect_email = array(
+    'post' => array(
+        'username' => 'regex:/a-z0-9/i',
+        'password' => 'string',
+        'new' => 'email',
+        'optout' => 'enum:all,some,none',
+        'token' => 'hex',
+    )
+);
+public function execEmail() {
+    // Code to handle email settings
+} 
+</pre>
+
+There are numerous other features you can use.  The best way to familiarize yourself with these is to read in the @filter.php@ code and look through what exists, and exactly what each assertion filter does for you.
+
+h3. Advanced Array Filtering
+
+One last thing about filtering and expect arrays.  Sometimes you have data coming in that's far more complicated.  Such as when you have POST arrays via PHP's magic ways of handling that.  To handle that, you need a more flexible system.  The filter system allows this by allowing you to specify as deep of arrays of data as you may want.  And also has a way to specify that a certain data point is an array itself, and how to treat it.
+
+So for example, if you had a large number of form fields that were @name="nums[]"@.  This would collect a potential array called nums, where each value was an integer.  To handle filtering this, you would use the following syntax:
+
+<pre>
+public $expect_stuff = array(
+    'post' => array(
+        'nums' => array('_values' => 'integer'),
+    )
+);
+</pre>
+
+But take this one step farther.  This assumes that you have keys in that nums array that you don't care about.  Perhaps you are collecting a number of emails for various usernames in one form.  Where each is of the format @name="email[user]"@.  This is allowed as well via the _keys option:
+
+<pre>
+public $expect_stuff = array(
+    'post' => array(
+        'email' => array('_keys' => 'string', '_values' => 'email'),
+    )
+);
+</pre>
+
+This just scratches the surface because you can then use these to have nested arrays as need as you want.  Again, take a look at @filter.php@ for more information.
+
+h2. Controller to View
+
+So now you understand the routing down to the controller, and how to filter the data coming into the controller.  The next step obviously is how the view is rendered, and how to pass data into the view.
+
+First of all, all of the routing magic that happened for your controller, is then copied to your view.  So if your controller was in @/controllers/users/settings@ and called @email.controller.php@ - Then unless you tell it otherwise, it's going to look in @/views/users/settings@ for a file called @email.view.php@.  Very straightforward and makes sure that we've got the controllers and views directories mirroring each other, unless you tell it otherwise.
+
+bq. *NOTE* All views are just PHP and parsed as such.  However you should refrain from doing any actual processing in the view.  All hard lifting should be done in the controller, and the data passed to the view.
+
+This name of the view, is stored in @$this->view@ and you can change it on the fly if you need to inside of your controller.  Also, besides the view itself, every view is wrapped in a template header&footer.  By default, this is the 'default' wrapper.  The name of it is stored in @$this->template@ and you can change (or remove) it as you wish for your specific controller or action.
+
+There is an additional option.  Sometimes you may have an endpoint where you don't actually want a view.  Most typically this is a JSON AJAX endpoint, where you are just going to @json_encode()@ some data and return it.  To handle this, you can set @$this->view@ to FALSE.  This will stop it from looking for a view file, and complaining if it can't find one.  Secondly, if you have any raw output that you want to provide, such as JSON, you can set that output to @$this->content@.  And exactly that will be returned.
+
+h3. Passing Data Between Controller and View
+
+I mentioned before that you should do all the heavy lifting in the Controller and then just pass data to the View.  But how do you do that?  You accomplish this via storing data in @$this->data@.  That property is defined an object of type @Storage@ (which you can treat just like a @stdClass@ instance, with the one benefit that it won't throw errors if you try to access data that doesn't exist yet.)  So just store whatever data you want in that object; however you want to.
+
+Afterwards, inside of your View, that data will be made available to you via just the variable @$data@.
+
+h3. Handling CSS and JS
+
+As a feature of the wrapper/template integration.  There is a more streamlined way of handling Javascript and CSS integration.  There are separate class properties in the Controller called @$this->js@ and @$this->css@.  These are arrays that hold the names of any JS or CSS files respectively that you wish included in your page.  Depending upon your usage case, you might define some of these directly as class properties inside of your controller for default settings.  (Such as making sure that a file called @admin.css@ is always included in any action endpoint inside of @admin.controller.php@.  Or in some cases you might just add additional JS or CSS files while inside of an endpoint itself.)
+
+The framework then, via the wrappers, uses this data to output the CSS and JS includes for you.  Do note one thing:  Our deployment script does some work to minimize CSS and JS upon a code push.  We don't want to double-minimize any code that we are getting/used already minimized (such as jQuery).  Therefore make sure to save any already minimized code in the format: @file.min.js@ (such as @jquery.min.js@).  Then include it in your code via: @$this->js[] = 'jquery.min';@
+
+This ensures that the already minimized code, will be left alone by the deployment script.
+
+h2. Other Controller Configuration
+
+There are a number of other configuration options (properties) that you can set in your controllers that I haven't mentioned above.  Either directly when you create your controller class.  Or inside of your various action endpoints.  I'm going to quickly run through them here.  To understand them more, read the code.
+
+|_=. Property      |_=. Default|_=. Description|
+|@$this->title@    |''         |This is used as the HTML &gt;title&lt; attribute|
+|@$this->cacheable@|false      |Can the output of this controller be cached by the browser?|
+|@$this->mode@     |'html'     |What type of output are we creating?  Valid options are: 'html', 'json', 'rss', 'xml'<br/>Will take case of setting appropriate headers for you.|
+|@$this->session@  |false      |Boolean value of whether you need a session or not.<br/>Must be set as a class property when you extend the class, setting it in your exec() doesn't do anything.|
+
+h2. Using Cache
+
+The cache mechanism built for Mojo allows for fairly easy access, and later extensibility.  At the moment, it is essentially a write-through class for Memcached.  To access the cache, a helper function has been made that returns to you the Singleton instance of cache:  @cache()@
+
+This allows you to very easily access the singleton and at the same time set or read a single variable.  So for example, to read in the value of the key 'user.12373', you need only do:
+
+<pre>
+    $result = cache()->get('user.12373');
+</pre>
+
+All commands that you would normally send to Memcached work here, but the cache class takes care of handling pool management, error management, and add two new features for us that don't normally exist.
+
+One is the addition of a key prefix.  Built into our configuration module is a key prefix that you can set which all keys that you set/get with cache() are prefixed with.  This allows us to quickly change that key prefix whenever we wish, and instantly all keys are invalidated.
+
+Secondly, is the idea of a local instance cache.  Basically within our code at this point, if you attempt to access the exact same key twice during one request, it doesn't request that data from the server twice.  As it keeps it's own local cache of all data that you've ever requested.  This means that it's safe for you to access cache objects wherever and not worry so much about performance issues, if two utility functions both attempt to load the same data.
+
+bq. *NOTE*: Even though we have the nice utility cache() method.  This should not be overused.  There is extra overhead in calling it each time.  Therefore if within one section of your code you are going to interact with the cache multiple times.  You should store the cache instance locally after your first cache() call, and then use that local instance.
+
+h2. Using Database
+
+I'm not going to write much about the Database class, because typically at this point one should rarely be directly using it.  As DB access should be taking place through the Model & Set classes.
+
+However, it works very similarly to the Cache class above.  It's a thin wrapper over the PDO DB access layer, and you can access it via @db()@ just like @cache()@ above.
+
+It adds 3 concepts on top of what PDO normally does for us.  For one, it adds the idea of Database Pools.  When you access @db()@ it shouldn't normally just be as such, but you should mention what database pool you want to access.  Typically this would be @db('read')@ versus @db('write')@ to differentiate between asking for a slave, versus the master.  However in the future we might add all sorts of different databases and/or DB pools, so it's good to keep that in mind.
+
+Secondly, it has some robust error handling and logging that it takes care of for us as well.  Making sure that any/all DB errors are logged so that we can fix them later.
+
+Finally, not so much a 'feature' as a workaround.  Is that since we want to have error logging, and since we are wrapping PDO.  It's not possible to directly use the bind parameters features of PDO (long story).  However using bound parameters is one of the easiest and safest ways to protect against SQL injection.  The solution to this is the @db()->boundQuery()@ method, which allows you in one swoop to provide a parameterized SQL query, and the array of data points to bind to those parameters.  And it takes care of handling all the work for you.
+
+h2. Using Model
+
+The Model class, depending upon your terminology and preferences, could be considered an ORM, or a TableWrapper.  It's like many of the parts of this framework a thin wrapper, in this case around any database table, allowing you to request data rows from a table, with built in caching.
+
+To use the Model, you need to create a new @table.model.php@ file for any DB table that you create.  In that file, extend the Model class itself.  The one additional step that you must take, is to define the @$_table@ property to be the name of the table that the Model is based upon.  So for example:
+
+<pre>
+    class User extends Model
+    {
+        static protected $_table = 'users';
+    }
+</pre>
+
+At the very minimum, that is all that is needed.   You now have the ability to access data via the Model.  If you want to create a new row in the table, just create a new class, inject the data that you want, and save it:
+
+<pre>
+    $user = new User();
+    $user->fullname = 'Eli White';
+    $user->username = 'EliW';
+    $user->admin = 1;
+    $user->save();
+</pre>
+
+To access an existing data row, you always reference it by it's ID column.  So therefore:
+
+<pre>
+    $user = new User(12373);
+    if ($user->username = 'EliW') {
+        $user->author = 1;
+    }
+    $user->save();
+</pre>
+
+There are some nice speed benefits built into the class.  For example in looking at the above code listing.  You see that the save() command gets called whether the $user was modified or not.  This is OK.  Because the Model class itself upon a save() being issued, checks to see if the data was modified at all or not.  If it wasn't, then it doesn't bother saving.
+
+It's also possible, if needed, to directly store SQL commands.  For example you may need to set a date, or increment a counter.  To do that, use the 'set' command, passing a 3rd parameter of TRUE (to say that it's raw sql):
+
+<pre>
+    $user = new User(12373);
+    $user->set('last_login', 'NOW()', true);
+    $user->set('login_count', 'login_count + 1', true);
+    $user->save();
+    
+    echo "User has logged in ". $user->login_count ." times.";
+</pre>
+
+Upon saving in these cases, the data will be automatically updated to the result from the SQL server.  So you can immediately access it and get the right values.  There are some additional features you should read the code documentation on, such as @delete()@, @setAll()@, @bust()@, etc.
+
+The important thing to note however, is how the Model class is really 'meant' to be used.  Which is that every possible way that you might access that specific kind of data (That specific table), should be handled inside of the appropriate Model class via additional methods.  As well as any logical methods that make sense.  So in the case of a User class as above.  You might want to make utility methods like this:
+
+<pre>
+    public method isEditor() {
+        return ($this->author && $this->admin);
+    }
+</pre>
+
+And any other ways that you would want to read in a User, besides the user id, should be handled via static methods that give access to that.  Such as the following:
+
+<pre>
+    public static method getByName($user) {
+        $id = db()->boundQuery('SELECT id from users where username = ?',
+                               array($user))->fetchColumn();
+        if ($id) {
+            return new User($id);
+        }
+        return false;
+    }
+</pre>
+
+Basically, anything that has to do with accessing a User, should be in the User model, and so on.
+
+h2. Using Set
+
+The Set class, is a simple way to have 'sets' of Models.  Basically any case where you would be reading in more than one data point from the database, you would use a Set to handle this, and to have built-in caching for yourself.
+
+In it's simplest use case, you simply instantiate a new Set, passing it the name of the model, and a SQL command that will return a list of id's for that model.  So the simplest example, if you were adding a @getAll()@ command to the Users model might be:
+
+<pre>
+    public static method getAll() {
+        return new Set('User', 'SELECT id from users');
+    }
+</pre>
+
+At that point, the Set object that is returned, implements ArrayAccess, Iterator, and Countable.  So you can treat it just like you would an array.  But the data is coming from the database, and each item that is returned to you is an object instance of class 'User'.
+
+The uses of this can get into very complicated use cases, so for now I'll leave it at the simplest form, and suggest that you read the code docs, the code, and look for good examples of how this might be used.
+
+h2. Using Config
+
+For our framework, a file is used to store configuration data:  @/config/config.xml@
+
+You can access this configuration when/wherever you need, similar to Cache and Database data, by just calling config() and getting a copy of the Singleton instance.
+
+Do note, that the configuration is returned as a SimpleXML object.  Make yourself aware of the 'interesting' intricacies of SimpleXML if you aren't familiar.  You often need to typecast the result in order to ensure that you get what you expected, and not a 'guaranteed to exist' SimpleXML result.  So for example if checking against what should be a boolean (1 or 0) result, make sure to typecast it to integer, in fact:
+
+<pre>
+    if ((int)config()->cache->disabled) {
+        // Do something
+    }
+</pre>
+
+h2. Using Log
+
+The last part of the framework that I will address, and currently one of it's most simple parts, is a basic logging mechanism that exists.   Eventually this may be augmented to allow for all sorts of 'fanciness'.  But for now it simply allows you to log anything you might possibly want to log, for any reason.
+
+You call it via @Log::write()@, and pass it 3 parameters.  The name of the log you want to write to.  The message to write to the log, and the 'Severity Level'.  For example:
+
+<pre>
+    Log::write('database', "Connection Failed", Log::ERROR);
+</pre>
+
+Currently this would write the log line to /logs/database.log
+
+You can see a list of all predefined log severities in the top of the Log class definition.  The whole idea behind having the Log severities, is that you can put in logging of various different 'levels' of debugging (Without overdoing it, for obviously there are some performance concerns if you add in too much logging), but then using the configuration file, you can define what level of logging you actually want to happen.  Any Log::write command of lesser severity than the currently configured log level, will simply be ignored.
+
+This is very useful to have debugging features in your code, that are normally turned off.  But when needed for live debugging, you can turn up the logging level for a while and watch what comes in the various log files.
+
+h2. Summary
+
+At this point just go read "http://docs.mojolive.com/":http://docs.mojolive.com/ for more details, or look in the code.

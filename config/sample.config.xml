@@ -1,0 +1,50 @@
+<config>
+    <!-- Environmental variables -->
+    <env>
+        <domain>example.local</domain>
+        <development>1</development>
+        <release>development</release>
+        <version>%%VERSION%%</version>
+    </env>
+    <!-- Sessions config -->
+    <session>
+        <name>localID</name>
+        <handler>files</handler>
+        <disablehijack>0</disablehijack>
+    </session>
+    <!-- Cookies -->
+    <cookies>
+        <prefix>local</prefix>
+    </cookies>
+    <!-- Database configuration -->
+    <db>
+        <default>read</default>
+        <pools>
+            <read>
+                <server>
+                    <dsn>mysql:host=127.0.0.1;port=3306;dbname=example</dsn>
+                    <user>exampleuser</user>
+                    <pass>examplepass</pass>
+                </server>
+            </read>
+        </pools>
+    </db>
+    <!-- Caching configuration (APC/Memcached/etc) -->
+    <cache>
+        <disable>0</disable>
+        <prefix>test</prefix>
+        <servers>
+            <server>
+                <host>localhost</host>
+                <port>11212</port>
+                <weight>1</weight>
+            </server>
+        </servers>
+    </cache>
+    <!-- Logging configuration -->
+    <log>
+        <disable>0</disable>
+        <directory>/path/to/logs</directory>
+        <level>20</level>
+    </log>
+</config>

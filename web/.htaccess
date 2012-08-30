@@ -1,0 +1,22 @@
+# Basic htaccess to help bootstrap:
+RewriteEngine On
+RewriteBase /
+
+# Canonicalize the hostname to a sans 'www' version - Flip logic if you want opposite.
+RewriteCond %{HTTP_HOST} ^www\.(.*) [NC]
+RewriteRule ^(.*)/?$ http://%1/$1 [NC,L,R=301]
+
+# Canonicalize our urls by removing any trailing '/'s
+RewriteRule ^(.*)/$ $1 [NC,L,R=301,QSA,NE]
+
+# Uncomment these lines to force a basic 'down page'
+#RewriteCond %{REQUEST_URI} !/favicon.ico
+#RewriteRule !^(js|img|css|fonts)/ down.html [NC,L,QSA]
+
+# Handle versioned media by removing the version, and bailing immediately:
+RewriteRule ^(v[0-9]+/)(js|img|css)/(.+)$ /$2/$3 [NC,L,QSA]
+
+# Rewrite all non-resource requests through the bootstrap:
+RewriteCond %{REQUEST_URI} !/favicon.ico
+RewriteRule !^(js|img|css|fonts)/ index.php [NC,L,QSA]
+

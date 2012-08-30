@@ -1,0 +1,1 @@
+The /web/ directory should be your HTML Root for Apache.  Don't delete the .htaccess and index.php, they are cruicial to this being effective.
