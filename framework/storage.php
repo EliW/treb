@@ -17,12 +17,12 @@ class Storage implements Countable
 {
     // Where it all gets held:
     protected $_data;
-    
+
     /**
      * __construct
      *
      * Basic constructor
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @return void
      * @access public
@@ -34,12 +34,12 @@ class Storage implements Countable
         }
         $this->_data = $input;
     }
-    
+
     /**
      * __set
      *
      * Magic Method: Allow any property to be set
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param $name string The property name passed in
      * @param $value mixed The value you want to save
@@ -50,12 +50,12 @@ class Storage implements Countable
     {
         $this->_data[$name] = $value;
     }
-    
+
     /**
      * __get
      *
      * Magic Method:  Allow any property to be retrieved
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param $name string The name of the property to be retrieved
      * @return mixed The value requested
@@ -69,12 +69,12 @@ class Storage implements Countable
         }
         return $return;
     }
-    
+
     /**
      * __isset
      *
      * Magic Method:  A way to check if a value is set.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param $name string The name of the property to be checked
      * @return boolean
@@ -84,12 +84,12 @@ class Storage implements Countable
     {
         return isset($this->_data[$name]);
     }
-    
+
     /**
      * __unset
      *
      * Magic Method:  Remove a property
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param $name string The name of the property to be removed
      * @return void
@@ -99,12 +99,12 @@ class Storage implements Countable
     {
         unset($this->_data[$name]);
     }
-    
+
     /**
      * count
      *
      * Used to implement Countable.  Returns the number of registered properties:
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @return integer
      * @access public
@@ -114,4 +114,3 @@ class Storage implements Countable
         return count($this->_data);
     }
 }
-?>

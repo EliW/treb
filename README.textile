@@ -1,6 +1,6 @@
 h1. Treb - a PHP mini-framework
 
-bq. "Treb" is short for "Trebuchet":http://en.wikipedia.org/wiki/Trebuchet, a medieval siege weapon that was of very simple design & concept, yet elegant in it's action.  It was a tool for 'quickly getting things done'  (As long as the thing at hand, was destroying a castle).  In this way, it mimics the design philosophies of this framework.
+bq. "Treb" is short for "Trebuchet":http://en.wikipedia.org/wiki/Trebuchet, a medieval siege weapon that was of very simple design & concept, yet elegant in its action.  It was a tool for 'quickly getting things done'  (As long as the thing at hand, was destroying a castle).  In this way, it mimics the design philosophies of this framework.
 
 h2. Background
 
@@ -8,7 +8,7 @@ Treb is an amalgamation of experience in building custom frameworks of similar n
 
 When working at mojoLive, this framework was built from scratch, and in hopes of not having to write 'yet another framework' when moving on to another company.  Eli White asked permission to open source the core framework that was written for mojoLive.
 
-Treb is the result of that (and many hours of scrubbing all specific-to-mojoLive aspects out of the code).  It's a start, and will continue to be cleaned up and enhanced as time goes on.  There will most likely still be parts of how this framework operates, that are rather specific to it's original purpose's needs, that will need made more generic, but we will cross those roads as they approach us.
+Treb is the result of that (and many hours of scrubbing all specific-to-mojoLive aspects out of the code).  It's a start, and will continue to be cleaned up and enhanced as time goes on.  There will most likely still be parts of how this framework operates, that are rather specific to its original purpose's needs, that will need made more generic, but we will cross those roads as they approach us.
 
 h2. Goals / Purpose / Philosophy
 
@@ -24,7 +24,7 @@ In the end, I'm not sure if anyone would really see Treb as a framework that you
 
 h2. Technology
 
-Treb is not 'well architected' by modern definitions of this, it wasn't meant to be.  It was meant to be a simple, functional system.  It doesn't do dependency injection, it doesn't use namespaces, it uses the singleton & multiton patterns in specifically chosen places and it has zero tests.  It simply was made as a simple, useable, and extendable framework.
+Treb is not 'well architected' by modern definitions of this; it wasn't meant to be.  It was meant to be a simple, functional system.  It doesn't do dependency injection, it doesn't use namespaces, it uses the singleton & multiton patterns in specifically chosen places and it has zero tests.  It simply was made as a simple, useable, and extendable framework.
 
 It does however require PHP 5.3+, as it uses some advanced aspects of PHP, and will move to PHP 5.4 in the near future.
 

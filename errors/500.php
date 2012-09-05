@@ -8,6 +8,6 @@
 <body>
     <h1>Error 500: Server Error</h1>
     <p><em>-- Generic Treb Framework error message</em></p>
-    <?= H::ifWrap($extra, '<p>'); ?>
+    <?php echo H::ifWrap($extra, '<p>'); ?>
 </body>
 </html>

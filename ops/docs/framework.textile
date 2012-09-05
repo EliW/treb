@@ -1,6 +1,6 @@
 h1. Treb Code Documentation
 
-bq. This documentation is specifically designed to be an overview of the Treb mini-framework system that has been created here.  Making it, hopefully, easy for a new programmer to familiarize themselves with the basics of the system and understand the flow of the code & how parts of it were intended to be used.  
+bq. This documentation is specifically designed to be an overview of the Treb mini-framework system that has been created here.  Making it, hopefully, easy for a new programmer to familiarize themselves with the basics of the system and understand the flow of the code & how parts of it were intended to be used.
 
 bq. This is *NOT* intended to serve as complete documentation, as I believe deeply in code comments for that.  You can see that via browsing the source, or via the automatically generated phpdoc pages.
 
@@ -10,7 +10,7 @@ The Treb framework has automatic routing built in.  Any request that comes in th
 
 It's actually very flexible in how it handles the routing, allowing the code structure underneath the system to change as needed, and be organized in whatever manner makes sense for that particular section of the website. All controllers are stored in the /controllers directory & related subdirectories, and so we will be looking there.  Controllers are always named in the @[name].controller.php@ naming style, extended from the main Controller class, and the methods within each file are @exec[name]()@.
 
-First of all, it tries to dive as many subdirectories deep as it can, to match the directories in the URL.  If it can't find them all, it tries to go as deep as possible.   Secondly, once it finds the deepest directory match that it can, it looks for one of two things.  Either a controller file with the name of the of the next remaining path element, and a method that matches that name.  Or a controller file with the name of the directory, and a method that matches the next remaining path element.
+First, it tries to dive as many subdirectories deep as it can, to match the directories in the URL.  If it can't find them all, it tries to go as deep as possible.  Second, once it finds the deepest directory match that it can, it looks for one of two things.  Either a controller file with the name of the next remaining path element, and a method that matches that name, or a controller file with the name of the directory, and a method that matches the next remaining path element.
 
 Ok, that was really confusing I'm sure.  So let's just give an example.  If someone enters a URL such as: @/user/settings/email@ - The following controllers might exist that can handle this, and will be searched in the order given - If none of these match (or in some cases of a partial match), a 404 will be thrown for us:
 
@@ -27,7 +27,7 @@ Ok, that was really confusing I'm sure.  So let's just give an example.  If some
 
 (Cases #8 and #9 are special examples.  If it can't find anything, it looks for @home.controller.php@ which is the default 'homepage' controller.  Typically this should be rarely used except for the homepage because of the powerful url overriding nature of it.)
 
-As you can see, this gives you great flexibility in how you structure your underlying controllers, and even allows you to restructure.  If you have an endpoint that's just a simple one page, it can just be a method in the parent's controller.  If it's more complicated, it can be moved into it's own directory, and as it grows it can become multiple directories and controllers.
+As you can see, this gives you great flexibility in how you structure your underlying controllers, and even allows you to restructure.  If you have an endpoint that's just a simple one page, it can just be a method in the parent's controller.  If it's more complicated, it can be moved into its own directory, and as it grows it can become multiple directories and controllers.
 
 h3. $allowExtra
 
@@ -39,9 +39,9 @@ Do note that if you use this feature, that *ANYTHING* sent after the path will b
 
 h2. Data Filtering
 
-One of the tenets of good web programming is FIEO (Filter Input, Escape Output).  The Treb Framework has functionality for this automatically built into the framework.  For any of your action endpoints (@execNAME()@ methods), by default no data is passed into them, and all normal external data sources (such as @$_POST@, @$_GET@, etc) are destroyed/wiped by the time your action runs.  So unless you do anything, you will receive no data.  The ultimate in filtering.
+One of the tenets of good web programming is FIEO (Filter Input, Escape Output).  The Treb Framework has functionality for this automatically built into the framework.  For any of your action endpoints (@execNAME()@ methods), by default no data is passed into them, and all normal external data sources (such as @$_POST@, @$_GET@, etc) are destroyed/wiped by the time your action runs.  So unless you do anything, you will receive no data--the ultimate in filtering.
 
-What is provided, therefore, is a filtering mechanism that allows you to not only specify what data fields you want to exist, but also to specify what kind of data should exist in each field.  The field is then filtered&sanitized for you, ensuring that the field always exists (no need for @isset()@ checks) and is a valid 'insert type' of data.
+What is provided, therefore, is a filtering mechanism that allows you to not only specify what data fields you want to exist, but also to specify what kind of data should exist in each field.  The field is then filtered & sanitized for you, ensuring that the field always exists (no need for @isset()@ checks) and is a valid 'insert type' of data.
 
 You do this via declaring a property in the controller class.  The name of the property matches the name of the action, and is of the form @$expect_NAME@.  So if your action was @execEmail()@, then your filter variable would be: @$expect_email@ (NOTE: The action names are case insensitive because of how PHP works.  However variable names are case sensitive in PHP.  Therefore all expect/filter names need to be an all lowercase version of the name.)
 
@@ -65,7 +65,7 @@ public $expect_email = array(
 );
 public function execEmail() {
     // Code to handle email settings
-} 
+}
 </pre>
 
 Granted, this is a very basic example.  But hopefully gives the idea.  Now some of the more advanced filters allow for additional information to be given after a ':'.  So for example, we might want to configure 'username' to not just be a generic string, but only allow alphanumerics.  We could do that with the regex filter.  Also, perhaps for the 'optout' field, instead of a boolean, we are showing the user a dropdown with 3 options.  That can be handled via the 'enum' filter.  So we might rewrite the code to look like this:
@@ -82,14 +82,14 @@ public $expect_email = array(
 );
 public function execEmail() {
     // Code to handle email settings
-} 
+}
 </pre>
 
 There are numerous other features you can use.  The best way to familiarize yourself with these is to read in the @filter.php@ code and look through what exists, and exactly what each assertion filter does for you.
 
 h3. Advanced Array Filtering
 
-One last thing about filtering and expect arrays.  Sometimes you have data coming in that's far more complicated.  Such as when you have POST arrays via PHP's magic ways of handling that.  To handle that, you need a more flexible system.  The filter system allows this by allowing you to specify as deep of arrays of data as you may want.  And also has a way to specify that a certain data point is an array itself, and how to treat it.
+Here's one last thing about filtering and expect arrays.  Sometimes you have data coming in that's far more complicated, such as when you have POST arrays via PHP's magic ways of handling that.  To handle that, you need a more flexible system.  The filter system allows this by allowing you to specify as deep of arrays of data as you may want, and also has a way to specify that a certain data point is an array itself, and how to treat it.
 
 So for example, if you had a large number of form fields that were @name="nums[]"@.  This would collect a potential array called nums, where each value was an integer.  To handle filtering this, you would use the following syntax:
 
@@ -115,9 +115,9 @@ This just scratches the surface because you can then use these to have nested ar
 
 h2. Controller to View
 
-So now you understand the routing down to the controller, and how to filter the data coming into the controller.  The next step obviously is how the view is rendered, and how to pass data into the view.
+So now you understand the routing down to the controller, and how to filter the data coming into the controller.  The next step obviously is how the view is rendered and how data is passed into the view.
 
-First of all, all of the routing magic that happened for your controller, is then copied to your view.  So if your controller was in @/controllers/users/settings@ and called @email.controller.php@ - Then unless you tell it otherwise, it's going to look in @/views/users/settings@ for a file called @email.view.php@.  Very straightforward and makes sure that we've got the controllers and views directories mirroring each other, unless you tell it otherwise.
+First, all of the routing magic that happened for your controller is then copied to your view.  For example, if your controller was in @/controllers/users/settings@ and called @email.controller.php@, then, unless you tell it otherwise, it's going to look in @/views/users/settings@ for a file called @email.view.php@.  It's very straightforward and makes sure that we've got the controllers and views directories mirroring each other, unless you tell it otherwise.
 
 bq. *NOTE* All views are just PHP and parsed as such.  However you should refrain from doing any actual processing in the view.  All hard lifting should be done in the controller, and the data passed to the view.
 
@@ -163,7 +163,7 @@ All commands that you would normally send to Memcached work here, but the cache 
 
 One is the addition of a key prefix.  Built into our configuration module is a key prefix that you can set which all keys that you set/get with cache() are prefixed with.  This allows us to quickly change that key prefix whenever we wish, and instantly all keys are invalidated.
 
-Secondly, is the idea of a local instance cache.  Basically within our code at this point, if you attempt to access the exact same key twice during one request, it doesn't request that data from the server twice.  As it keeps it's own local cache of all data that you've ever requested.  This means that it's safe for you to access cache objects wherever and not worry so much about performance issues, if two utility functions both attempt to load the same data.
+Secondly, is the idea of a local instance cache.  Basically within our code at this point, if you attempt to access the exact same key twice during one request, it doesn't request that data from the server twice.  As it keeps its own local cache of all data that you've ever requested.  This means that it's safe for you to access cache objects wherever and not worry so much about performance issues, if two utility functions both attempt to load the same data.
 
 bq. *NOTE*: Even though we have the nice utility cache() method.  This should not be overused.  There is extra overhead in calling it each time.  Therefore if within one section of your code you are going to interact with the cache multiple times.  You should store the cache instance locally after your first cache() call, and then use that local instance.
 
@@ -202,7 +202,7 @@ At the very minimum, that is all that is needed.   You now have the ability to a
     $user->save();
 </pre>
 
-To access an existing data row, you always reference it by it's ID column.  So therefore:
+To access an existing data row, you always reference it by its ID column.  So therefore:
 
 <pre>
     $user = new User(12373);
@@ -221,7 +221,7 @@ It's also possible, if needed, to directly store SQL commands.  For example you 
     $user->set('last_login', 'NOW()', true);
     $user->set('login_count', 'login_count + 1', true);
     $user->save();
-    
+
     echo "User has logged in ". $user->login_count ." times.";
 </pre>
 
@@ -254,7 +254,7 @@ h2. Using Set
 
 The Set class, is a simple way to have 'sets' of Models.  Basically any case where you would be reading in more than one data point from the database, you would use a Set to handle this, and to have built-in caching for yourself.
 
-In it's simplest use case, you simply instantiate a new Set, passing it the name of the model, and a SQL command that will return a list of id's for that model.  So the simplest example, if you were adding a @getAll()@ command to the Users model might be:
+In its simplest use case, you simply instantiate a new Set, passing it the name of the model, and a SQL command that will return a list of ids for that model.  So the simplest example, if you were adding a @getAll()@ command to the Users model might be:
 
 <pre>
     public static method getAll() {
@@ -282,7 +282,7 @@ Do note, that the configuration is returned as a SimpleXML object.  Make yoursel
 
 h2. Using Log
 
-The last part of the framework that I will address, and currently one of it's most simple parts, is a basic logging mechanism that exists.   Eventually this may be augmented to allow for all sorts of 'fanciness'.  But for now it simply allows you to log anything you might possibly want to log, for any reason.
+The last part of the framework that I will address, and currently one of its most simple parts, is a basic logging mechanism that exists.   Eventually this may be augmented to allow for all sorts of 'fanciness'.  But for now it simply allows you to log anything you might possibly want to log, for any reason.
 
 You call it via @Log::write()@, and pass it 3 parameters.  The name of the log you want to write to.  The message to write to the log, and the 'Severity Level'.  For example:
 

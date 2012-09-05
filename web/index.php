@@ -7,4 +7,3 @@
  **/
 require_once '../framework/application.php';
 $app = new Application();
-?>

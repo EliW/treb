@@ -127,7 +127,7 @@ abstract class Model
     /**
      * set
      *
-     * Set's a field.  Taking care of some fancy logic for us while it's at it.
+     * Sets a field.  Taking care of some fancy logic for us while it's at it.
      *  for one thing, it actually tries to keep track if the data really changed
      *  or not, and therefore if it's 'dirty' and needs saved later.
      *
@@ -543,7 +543,7 @@ abstract class Model
         $class = get_called_class();
         return $class::$_table;
     }
-    
+
     /**
      * total
      *
@@ -555,7 +555,7 @@ abstract class Model
      *  to be either datetime, a timestamp, or a time description string:
      *
      * WARNING:  No Caching at the moment!
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $since A mixed time designation
      * @param mixed $before A mixed time designation
@@ -593,4 +593,3 @@ abstract class Model
  * @author Eli White <eli@eliw.com>
  **/
 class ModelException extends Exception {}
-?>

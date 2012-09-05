@@ -56,7 +56,7 @@ abstract class Controller
 
     // Holder for CSS/JS/other external include files to be stored:
     protected $externals;
-    
+
     // Holders for 'links' and 'meta' that might need added in - unfortunately just diff enough.
     protected $links = array();
     protected $meta = array();
@@ -211,7 +211,7 @@ abstract class Controller
                     if ($this->prevent_clickjack) {
                         // Clickjack Protection, rough & absolute for now
                         //  You still need to add a JS/CSS solution as well for full protection
-                        header('X-Frame-Options: DENY');   
+                        header('X-Frame-Options: DENY');
                     }
                     break;
                 case 'text':
@@ -232,7 +232,7 @@ abstract class Controller
                 case 'php':
                     header('Content-Type: application/vnd.php.serialized; charset=utf-8');
                     break;
-                    
+
             }
 
             // Do they want this to be cacheable?
@@ -376,7 +376,7 @@ abstract class Controller
         $this->externals->{$type}->{$sub} =
             array_merge((array)$this->externals->{$type}->{$sub}, (array)$what);
     }
-    
+
     /**
      * addLink
      *
@@ -389,7 +389,7 @@ abstract class Controller
      *
      * Such as: RSS/ATOM feeds, shorturl links, prev/next, 'canonical', and all those other messy
      *  things.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $rel The 'rel' attribute content
      * @param string $href The 'href' of this link
@@ -419,7 +419,7 @@ abstract class Controller
      *  'property'.  I debated a bunch of different ways to handle this.  For now the decision was
      *  to just accept a 'name' and 'content', then have a switch to declare if this is really a
      *  'property' instead (FACEBOOK!).  We can rejigger that later.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $name The descriptive attribute of this link
      * @param string $content The content of the meta tag
@@ -459,4 +459,3 @@ abstract class Controller
         }
     }
 }
-?>

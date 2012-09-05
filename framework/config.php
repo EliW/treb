@@ -19,7 +19,7 @@ class Config
 {
     private static $_object; // Holds the singleton
     private $_data; // Holds the config data
-    
+
     /**
      * __construct
      *
@@ -32,7 +32,7 @@ class Config
      *   NEVER put a live website up sans config file, right?
      *
      * We may want to pretty that up in the future
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @return void
      * @access private
@@ -56,44 +56,44 @@ class Config
             die("Configuration Unparseable");
         }
     }
-    
+
     /**
      * __clone
      *
      * PHP's clone method.  But we don't want to allow cloning, so make it private
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @return void
      * @access private
      **/
     private function __clone() {}
-    
+
     /**
      * get
      *
      * The static method 'get' will ensure the singleton exists and then
      * return the data from it.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @return SimpleXML tree of config data
      * @access public
      **/
-     static public function get() 
+     static public function get()
      {
          $o = self::singleton();
          return $o->_data;
      }
-     
+
      /**
       * singleton
       *
       * This singleton method instantiates the instance and returns it.
-      * 
+      *
       * @author Eli White <eli@eliw.com>
       * @return Config object
       * @access public
       **/
-     static public function singleton() 
+     static public function singleton()
      {
          if (!is_object(self::$_object)) {
              self::$_object = new self();
@@ -101,4 +101,3 @@ class Config
          return self::$_object;
      }
 }
-?>

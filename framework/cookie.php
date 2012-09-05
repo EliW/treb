@@ -33,22 +33,22 @@ class Cookie
         if ($expire && ($expire < $now)) {
             $expire += $now;
         }
-        
+
         // Add in the prefix if it exists:
         if ($prefix = config()->cookies->prefix) {
             $name = "{$prefix}_{$name}";
         }
-        
+
         // Now we can just set the cookie:
         setcookie($name, $value, $expire, $path, (string)config()->env->domain);
     }
-    
+
     /**
      * delete
      *
      * Removes a cookie for us.  Well, actually sets the cookie to expire.  I dislike
      *  how cookies work.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed  Documentation
      * @return void
@@ -60,12 +60,12 @@ class Cookie
         //  Set the cookie to expire 2 days ago (why 2 days?  why not?)
         self::set($name, 0, -172800, $path);
     }
-    
+
     /**
      * get
      *
      * Returns the value of a cookie, taking prefixing into account
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $name The name of the cookie you want the value of
      * @return mixed
@@ -79,6 +79,5 @@ class Cookie
         }
         return isset($_COOKIE[$name]) ? $_COOKIE[$name] : NULL;
     }
-    
-} // END class 
-?>
+
+} // END class
