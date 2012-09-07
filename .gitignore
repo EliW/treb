@@ -1,0 +1,4 @@
+/config/config.xml
+.DS_Store
+/tmp
+!README.txt
