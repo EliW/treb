@@ -7,7 +7,7 @@
 *
 * Edit the 'config' section below to work properly for your setup.  The 'relay' needs to be a bot
 *  that accepts/understands the 'say' command, such as Phergie: http://phergie.org/
-**/ 
+**/
 
 // So this bot walked into a bar ...
 set_time_limit(0);
@@ -67,4 +67,3 @@ class IRCBot {
 // Start the bot
 if (!($message = $argv[1])) { die("You need to provide a message!"); }
 $bot = new IRCBot($message);
-?>

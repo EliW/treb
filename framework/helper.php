@@ -220,7 +220,7 @@ class Helper
      * To use this, pass it the opening tag, with all parameters how you want it, it handles the
      *  escaping as well as closing the tag for you.
      *
-     * IE:  <?= H::wrap($data->errors->name, '<span class="failure">') ?>
+     * IE:  <?= H::wrap($data->errors->name, '<span class="failure">'); ?>
      *
      * @author Eli White <eli@eliw.com>
      * @param string $text The original text you want wrapped
@@ -254,7 +254,7 @@ class Helper
      *
      * Why?  Because it's much nicer to do this, than to litter the views with samples such
      *  as the following which was happening alot:
-     *  <?= $data->errors->name ? H::wrap($data->errors->name, '<span class="failure">') : '' ?>
+     *  <?= $data->errors->name ? H::wrap($data->errors->name, '<span class="failure">') : ''; ?>
      *
      * This helper allows you, in these cases, to just do ifWrap instead.
      *
@@ -286,7 +286,7 @@ class Helper
         //  to escape it.  Might change later if someone cares.
         return '<pre>' . self::escape(print_r($var, true)) . '</pre>';
     }
-    
+
     /**
      * src
      *
@@ -306,7 +306,7 @@ class Helper
      *
      * Anyway, just pass it the 'src' string for an image, sans the /img/ beginning part, it takes
      *  care of the rest for you.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $src A partial pathname to the image to load in.
      * @return void
@@ -317,7 +317,7 @@ class Helper
         // For now just a passthrough to 'version' below:
         return self::version('img', $src);
     }
-    
+
     /**
      * version
      *
@@ -325,7 +325,7 @@ class Helper
      *  various media types.  'js', 'css', 'img', and potentially future ones.   This was written
      *  in this fashion so that include.js and include.css could 'share', also to make it easy to
      *  handle different things, differently, in the future:
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $type Just a text string for the type of media we want to version js/css/img
      * @param string $href The partial href, not counting for original $type

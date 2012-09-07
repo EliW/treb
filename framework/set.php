@@ -20,7 +20,7 @@ class Set implements Iterator, ArrayAccess, Countable
 {
     // A single const used to declare when a set should NOT be cached:
     const NOCACHE = NULL;
-    
+
     // Storage variables for us to keep track of our own internal data:
     private $_model;   // Name of our model
     private $_query;   // SQL query
@@ -35,7 +35,7 @@ class Set implements Iterator, ArrayAccess, Countable
      * Basic constructor for the Set class.
      *
      * You need to pass in the name of the Model you wish to use, and a DB query
-     *  that will return id's (and only id's) of that model.
+     *  that will return ids (and only ids) of that model.
      *
      * You also have the option to provide the DB pool that your query should be
      *  run against. If you don't, it defaults to the pool used by the Model that
@@ -90,7 +90,7 @@ class Set implements Iterator, ArrayAccess, Countable
     {
         // Only continue if we don't have a set currently:
         if ($this->_set === NULL) {
-            // First attempt to load this set from the cache -> maybe ... 
+            // First attempt to load this set from the cache -> maybe ...
             if ($this->_timeout !== self::NOCACHE) {
                 $cache = cache();
                 $set = $cache->get($this->_key);
@@ -99,7 +99,7 @@ class Set implements Iterator, ArrayAccess, Countable
                     return; // Short circuit, we are done
                 }
             }
-            
+
             // Else, either we didn't want cache, or it wasn't in cache, either way:
 
             // Get it from the database:
@@ -405,4 +405,3 @@ class Set implements Iterator, ArrayAccess, Countable
     }
 
 } // END class
-?>

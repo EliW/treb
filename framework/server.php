@@ -81,7 +81,7 @@ class Server
     /**
      * isPost
      *
-     * Boolean response version of the method() above.  Just let's you know
+     * Boolean response version of the method() above.  Just lets you know
      *  If this request was a post or not.
      *
      * @author Eli White <eli@eliw.com>
@@ -143,4 +143,3 @@ class Server
 
 
 } // END class
-?>

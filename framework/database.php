@@ -2,7 +2,7 @@
 /**
  * Database
  *
- * This is the database wrapper class, and all it's extended glory.
+ * This is the database wrapper class, and all its extended glory.
  *
  * Really it's just a thin wrapper around PDO, that does a few things that experience
  *  has taught me are key for scability:
@@ -18,7 +18,7 @@
  * @param string $pool
  * @return PDO
  **/
- 
+
 function db($pool = false)
 {
     return Database::getConnection($pool);
@@ -33,7 +33,7 @@ class Database
      * __construct
      *
      * Making the constructor private so that noone can instantiate this class
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @return void
      * @access private
@@ -50,7 +50,7 @@ class Database
      * NOTE: I considered making this mimic the Cache class more, and pushing more of
      *  the 'connection' concept down into the 'wrapper' itself, but it seemed more
      *  logical to break it this way for databases.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $pool The name of the DB pool to access
      * @return DatabaseConnection
@@ -60,7 +60,7 @@ class Database
     {
         // Read in the configuration once, default to he DB section:
         $config = config()->db;
-        
+
         // Figure out what pool to use, if they don't set one, or if they
         //  don't choose a 'valid' one according to config, we are going to
         //  push them into the default one defined in the config:
@@ -82,11 +82,11 @@ class Database
 
                 // Try to make the connection via PDO:
                 try {
-                    $connection = new PDO($servers[$key]->dsn, $servers[$key]->user, $servers[$key]->pass);                        
+                    $connection = new PDO($servers[$key]->dsn, $servers[$key]->user, $servers[$key]->pass);
                 } catch (PDOException $e) {
                     // It failed, log this:
                     Log::write('database',
-                        array($pool, $servers[$key]->dsn, $e->getCode(), $e->getMessage()), 
+                        array($pool, $servers[$key]->dsn, $e->getCode(), $e->getMessage()),
                         Log::ERROR);
                 }
 
@@ -100,10 +100,10 @@ class Database
                 throw new Exception("Unable to connect to any {$pool} database!");
             } else {
                 // Instantiate the Database connct, and save to multions:
-                self::$_multitons[$pool] = new DatabaseConnection($connection);                    
+                self::$_multitons[$pool] = new DatabaseConnection($connection);
             }
         }
-            
+
         return self::$_multitons[$pool];
     }
 }
@@ -127,7 +127,7 @@ class DatabaseConnection
      *
      * A very basic constructor.  Just store the database connection.
      * Also issue a UTF8 command to ensure we are working in utf8
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param PDO $connection The PDO object
      * @return void
@@ -136,7 +136,7 @@ class DatabaseConnection
     public function __construct(PDO $connection)
     {
         $this->_db = $connection;
-        
+
         // Upon socket creation, ensure we are talking UTF-8
         $connection->exec("SET NAMES 'utf8'");
     }
@@ -146,14 +146,14 @@ class DatabaseConnection
      *
      * This magic method allows for all methods that we don't override, to pass
      *  straight through to PDO for us.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $name Name of the PDO method to be called
      * @param string $args All the arguments we were passed
      * @return mixed (Whatever PDO returns)
      * @access public
      **/
-    public function __call($name, $args) 
+    public function __call($name, $args)
     {
         // Create passthrough to PDO functions...
         return call_user_func_array(array($this->_db, $name), $args);
@@ -163,7 +163,7 @@ class DatabaseConnection
      * query
      *
      * Specifically overloading PDO::query to add in our custom error handling:
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $sql The SQL statement to be executed - always required
      * @param variable Using var_args to handle any number of parameters passed in
@@ -174,22 +174,22 @@ class DatabaseConnection
     {
         // Get any additional parameters that were passed in, using varargs
         $args = func_get_args();
-        
+
         // Call the PDO query method, saving the response:
         $result = call_user_func_array(array($this->_db, 'query'), $args);
-        
+
         // If the query failed we had an error, pass that into our error handler
         if (!$result) { $this->_handleError($sql, $this->_db->errorInfo()); }
-        
+
         return $result;
     }
-    
+
     /**
      * exec
      *
      * Just like 'query' above, but handles exec instead.  Could 'almost' be combined
      *  codewise, but easier to separate for now:
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $sql SQL statement to be executed.
      * @return integer The number of rows that were affected.
@@ -205,7 +205,7 @@ class DatabaseConnection
 
         return $result;
     }
-    
+
     /**
      * boundQuery
      *
@@ -224,7 +224,7 @@ class DatabaseConnection
      *
      * This doesn't let you prepare one statement once, then execute it with numerous
      *  sets of parameters yet.  But in practice that's a RARE use case in a web app.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $sql The SQL statement to be executed
      * @param array $params An array of parameters to be bound into the statement
@@ -248,12 +248,12 @@ class DatabaseConnection
 
         return $statement;
     }
-    
+
     /**
      * _handleError
      *
      * If we had any DB error, handle that, logging and throwing an exception.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $sql The original SQL that was executed
      * @param array $info An errorInfo array, gathered from PDO or PDOStatement.
@@ -280,4 +280,3 @@ class DatabaseConnection
         return str_replace(array('\\', '%', '_'), array('\\\\', '\%', '\_'), $string);
     }
 }
-?>

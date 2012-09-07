@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title><?= $this->title ?> ...treb...</title>
+        <title><?= $this->title; ?> ...treb...</title>
         <link rel="icon" href="/favicon.ico" />
 
         <?php require 'include.css.php'; ?>

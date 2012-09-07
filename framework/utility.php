@@ -157,7 +157,7 @@ class Utility
      * @access public
      **/
     public static function cachedRow($sql, $params = NULL, $db = NULL,
-                                     $key = NULL, $timeout = Cache::HOUR, 
+                                     $key = NULL, $timeout = Cache::HOUR,
                                      $cache = NULL, $force = FALSE)
     {
         // If they didn't provide a cache connection, make one:
@@ -199,4 +199,3 @@ class Utility
     }
 
 } // END class
-?>
