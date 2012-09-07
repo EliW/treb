@@ -2,7 +2,7 @@
 /**
  * Application
  *
- * Otherwise known as the Front Controller (plus some).  This is where the 
+ * Otherwise known as the Front Controller (plus some).  This is where the
  *  basic bootstrap functionality takes place, to keep the index.php to be
  *  extremely minimal. As well as any other number of 'basic' functionality
  *
@@ -14,16 +14,16 @@ class Application
     // Hold the main directory that all items are stored in:
     public $controller_path;
     public $controller_name;
-    
+
     // Hold some private data that only we need to know about
     private $_controller;
     private $_mode;
-    
+
     /**
      * __construct
      *
      * Constructor for the Application class, actually does the bootstrapping
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $mode Allows for a variance of the typical startup process to be defined
      * @access public
@@ -31,13 +31,13 @@ class Application
     function __construct($mode = FALSE)
     {
         $this->_mode = $mode;
-        
+
         // Create a define for our root directory, it will come in handy later:
         define('ROOT', dirname(__FILE__) . '/..');
-        
+
         // Handle the basic setup:
         $this->_startup();
-        
+
         // Now bootstrap us, if we aren't a cron job:
         if ($mode != 'cron') {
             $this->_bootstrap();
@@ -62,14 +62,14 @@ class Application
      *  404/500 pages are provided.
      *
      * TODO:  Update this to PHP 5.4's http_header_code(), so more proper responses are generated
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param int $code Representation of the code to be thrown
      * @param string $extra Additional information, varies based upon code.
      * @return void
      * @access public
      **/
-    public static function http($code, $extra = '') 
+    public static function http($code, $extra = '')
     {
         // Nominally normalize code, worst case default to a good-ole-500
         $code = (int)$code;
@@ -101,31 +101,31 @@ class Application
                 die;
         }
     }
-    
+
     /**
      * _startup
      *
      * Everything that needs to happen to actually start the application running.
      *  You know, basic stuff, like setting up paths, autoload, error handling…
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @return void
      * @access private
      **/
-    private function _startup() 
+    private function _startup()
     {
         // We are going to force 'UTC' timezone here. Yes it should be in the php.ini
         //  However, not every dev environment may have it set right, this ensures that:
         date_default_timezone_set('UTC');
-        
+
         // We will be using autoloading for a few of our own things.
         //  But go ahead and add the 'libraries' directory into the include
         //  path for when we need to pull in 3rd party libraries:
         set_include_path(get_include_path() . PATH_SEPARATOR . ROOT . '/library');
-        
+
         // Load configuration first before anything else:
         require_once(ROOT . '/framework/config.php');
-        
+
         // Parse our configuration once now:
         $config = config();
 
@@ -136,7 +136,7 @@ class Application
         } else {
             ini_set('display_errors', 0);
         }
-        
+
         // Either way, make sure that every error is created/logged.
         error_reporting(-1);
 
@@ -146,10 +146,10 @@ class Application
 
             // All locations we want to autoload classes from:
             $locations = array(
-                "/framework/{$class}.php", 
-                "/models/{$class}.model.php", 
+                "/framework/{$class}.php",
+                "/models/{$class}.model.php",
                 "/classes/{$class}.php");
-            
+
             // Look through each and attempt to load them if the file exists.
             foreach ($locations as $file) {
                 if (file_exists(ROOT . $file)) {
@@ -162,7 +162,7 @@ class Application
         });
 
         // Setup what's needed for a session.  Don't actually start one though.
-        //   Let's scripts that need them, use them.
+        //   Lets scripts that need them, use them.
 
         // If the handler is 'files':
         if ((string)$config->session->handler == 'files') {
@@ -174,7 +174,7 @@ class Application
             ini_set('session.save_path', cache()->sessionString());
         }
         ini_set('session.name', (string)$config->session->name ?: 'SESSID');
-        
+
         // Setup a generic exception handler that will Log all uncaught exceptions:
         $mode = $this->_mode;
         set_exception_handler(function ($e) use ($mode) {
@@ -186,11 +186,11 @@ class Application
             $error = '';
             if ((int)config()->env->development || ($mode == 'cron')) {
                 $error = "<p style='color:red'>Unhandled Exception: " . get_class($e) .
-                    ', ' . $e->getMessage() . "\n<br />FILE: " . $e->getFile() . 
+                    ', ' . $e->getMessage() . "\n<br />FILE: " . $e->getFile() .
                     "\n<br />LINE: " . $e->getLine() . "\n<br />TRACE:\n<br />" .
                     nl2br($e->getTraceAsString(), true) . "</p>\n";
             }
-            
+
             // Handle the error situation
             if (!headers_sent()) {
                 // Well good, we hadn't echo'd anything yet.  Change the response to a 500
@@ -210,22 +210,22 @@ class Application
      * _shutdown
      *
      * Handles any final shutdown work that we need to do
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @return void
      * @access private
      **/
-    private function _shutdown() 
+    private function _shutdown()
     {
         // Actually, nothing right now.
     }
-    
+
     /**
      * _bootstrap
      *
      * Handles the bootstrap section of the code.  Finds the controller/view that we
      *  are wanting to refer to, and pushes 'em through.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @return void
      * @access private
@@ -284,7 +284,7 @@ class Application
             $exec = array_shift($path);
         }
         $method = "exec{$exec}";
-        
+
         // Save this extra data as if it was another superglobal, makes it easier
         //  to process later just like those others:
         $GLOBALS['_EXTRA'] = $path;
@@ -296,7 +296,7 @@ class Application
         if (!in_array($exec, $this->_controller->allowExtra) && count($path)) {
             Application::http(404);
         }
-        
+
         // One last sanity check.  If at this point the method doesn't exist, 404
         //  This would most likely happy because, say, you make a controller class, but
         //  never make a 'homepage' method for that new controller.
@@ -310,5 +310,4 @@ class Application
         // Then call the controller's view method to display it:
         $this->_controller->view();
     }
-} // END class 
-?>
+} // END class

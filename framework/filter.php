@@ -1,7 +1,7 @@
 <?php
 /**
  * Filter
- * 
+ *
  * A library to handle filtering of any data.
  *
  * Pass in an array of data that you wanted filtered and a configuration array
@@ -35,13 +35,13 @@
  * @package treb
  * @author Eli White <eli@eliw.com>
  **/
-class Filter 
+class Filter
 {
     /**
      * __construct
      *
      * Bare constructor, doesn't do anything.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @return Filter
      * @access public
@@ -54,14 +54,14 @@ class Filter
      * The 'meat' of this class.  Takes the input array and filter options.
      *
      * Returns an array of data back, sanitized.
-     * 
+     *
      * @author  Eli White <eli@eliw.com>
      * @param   array   $input      The array to sanitize (i.e. GET or POST)
      * @param   array   $filters    Configuration matching the above examples (expect_[SOURCE])
      * @return  array   Cleaned data
      * @access  public
      **/
-    public function sanitize(Array $input, Array $filters) 
+    public function sanitize(Array $input, Array $filters)
     {
         // Loop through all the requested data points
         $output = array();
@@ -70,23 +70,23 @@ class Filter
             $value = isset($input[$source]) ? $input[$source] : null;
             $output[$source] = $this->_callAssert($value, $filter);
         }
-        
+
         return $output;
     }
-    
+
     /**
      * _callAssert
      *
      * A utility function that handles the logic of looking at a filter
      *  and calling the right assert method on a single value.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $value Value to be asserted.
      * @param mixed $filter The filter config (an array) that was requested.
      * @return mixed The asserted value
      * @access private
      **/
-    private function _callAssert($value, $filter) 
+    private function _callAssert($value, $filter)
     {
         // Handle potentially recursive array case first:
         if (is_array($filter)) {
@@ -100,7 +100,7 @@ class Filter
                 $retval = $this->{"_assert{$opt[0]}"}($value);
             }
         }
-        
+
         return $retval;
     }
 
@@ -110,20 +110,20 @@ class Filter
      * Ensures that we've got an array, and that it matches either a
      *  recursive definition, a 'every entry is this' definition, or
      *  a mix of those.  Returns a blank array if this wasn't an array.
-     * 
+     *
      * @author  Eli White <eli@eliw.com>
      * @param   mixed $value    Value to be asserted.
      * @param   mixed $filter   The filter config (an array) that was requested.
      * @return  array
      * @access  private
      **/
-    private function _assertArray($value, Array $filter) 
+    private function _assertArray($value, Array $filter)
     {
         // First step, is the value isn't even an array, we are done.
         if (!is_array($value)) {
             $value = array();
         }
-        
+
         // Second case, if the filter is a request for a series of identical
         //  items and/or keys
         $output = array();
@@ -143,7 +143,7 @@ class Filter
             //  this is a basic subarray & recurse:
             $output = $this->sanitize($value, $filter);
         }
-        
+
         return $output;
     }
 
@@ -152,13 +152,13 @@ class Filter
      *
      * Doesn't do anything.  Exists to allow raw data passed through, but
      *  should RARELY ever be used.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $value Value to be asserted.
      * @return mixed
      * @access private
      **/
-    private function _assertRaw($value) 
+    private function _assertRaw($value)
     {
         return $value;
     }
@@ -167,13 +167,13 @@ class Filter
      * _assertInteger
      *
      * Ensures that the value returned is an Integer
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $value Value to be asserted.
      * @return integer
      * @access private
      **/
-    private function _assertInteger($value) 
+    private function _assertInteger($value)
     {
         return intval($value);
     }
@@ -183,13 +183,13 @@ class Filter
      *
      * Ensures that the value returned is a valid hexadecimal string, such as a
      *  md5() or sha1() response, or null.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $value Value to be asserted.
      * @return string
      * @access private
      **/
-    private function _assertHex($value) 
+    private function _assertHex($value)
     {
         if (!ctype_xdigit($value)) {
             $value = null;
@@ -201,13 +201,13 @@ class Filter
      * _assertBase36
      *
      * Ensures that the value returned is a valid base36 string, or NULL
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $value Value to be asserted.
      * @return string
      * @access private
      **/
-    private function _assertBase36($value) 
+    private function _assertBase36($value)
     {
         // Force it to lowercase, then check:
         $value = strtolower($value);
@@ -221,13 +221,13 @@ class Filter
      * _assertFloat
      *
      * Ensures that the value returned is a Float
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $value Value to be asserted.
      * @return float
      * @access private
      **/
-    private function _assertFloat($value) 
+    private function _assertFloat($value)
     {
         return floatval($value);
     }
@@ -239,13 +239,13 @@ class Filter
      *
      * NOTE:  This doesn't look for things like 'false', 'no', 'off', etc.
      *  so be careful when using it.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $value Value to be asserted.
      * @return boolean
      * @access private
      **/
-    private function _assertBoolean($value) 
+    private function _assertBoolean($value)
     {
         return (boolean)$value;
     }
@@ -257,16 +257,16 @@ class Filter
      *
      * If the optional second parameter is supplied, such as: 'string:50', then it
      *  ensures that the string is no longer than that many characters via truncation.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $value Value to be asserted.
      * @param integer $max Maximum length of the string
      * @return string
      * @access private
      **/
-    private function _assertString($value, $max = FALSE) 
+    private function _assertString($value, $max = FALSE)
     {
-        // Strips tags, trims, and attempts to replace all UTF8 'space' characters with a 
+        // Strips tags, trims, and attempts to replace all UTF8 'space' characters with a
         //  natural 'space'.  Note this doesn't touch paragraph/line spaces, because we allow
         //  them in descriptions/etc.  We may need to get more 'detailed' later to handle that.
         if ($value !== '') {
@@ -285,13 +285,13 @@ class Filter
      *
      * NULL if no value was passed in at all.
      * FALSE if the value failed the assertion.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $value Value to be asserted.
      * @return string
      * @access private
      **/
-    private function _assertEmail($value) 
+    private function _assertEmail($value)
     {
         if (empty($value)) {
             $value = NULL;
@@ -308,13 +308,13 @@ class Filter
      *
      * NULL if no value was passed in at all.
      * FALSE if the value failed the assertion.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $value Value to be asserted.
      * @return string
      * @access private
      **/
-    private function _assertUrl($value) 
+    private function _assertUrl($value)
     {
         if (empty($value)) {
             $value = NULL;
@@ -331,14 +331,14 @@ class Filter
      * It will assume that the 1st value is the 'default' one.  If you want to allow
      *  for a 'blank'/false type default, just make your first option start with
      *  a comma, so:  enum:,red,blue,green
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $value Value to be asserted.
      * @param array $enum An enumeration CSV of options that are possible.
      * @return mixed
      * @access private
      **/
-    private function _assertEnum($value, $enum) 
+    private function _assertEnum($value, $enum)
     {
         // Break the list up into an array:
         $options = explode(',', $enum);
@@ -353,14 +353,14 @@ class Filter
      * _assertRegex
      *
      * Runs the value through a provided regex, if it doesn't match, clear it.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $value Value to be asserted.
-     * @param array $regex The preg based regex 
+     * @param array $regex The preg based regex
      * @return mixed
      * @access private
      **/
-    private function _assertRegex($value, $regex) 
+    private function _assertRegex($value, $regex)
     {
         if (!$value || !preg_match($regex, $value)) {
             $value = null;
@@ -380,7 +380,7 @@ class Filter
      * @return mixed
      * @access private
      */
-    private function _assertDate($value) 
+    private function _assertDate($value)
     {
         // Only current option is images, so use as such:
         return strtotime($value);
@@ -390,8 +390,8 @@ class Filter
      * _assertData
      *
      * A very specific filter, for convenience.  This filter looks against an existing 'Data' class
-     *  that will need defined in the /classes/ directory, for static variables, and then 
-     *   essentially performs like the 'enum' filter does above.  Allowing you to make sure your 
+     *  that will need defined in the /classes/ directory, for static variables, and then
+     *   essentially performs like the 'enum' filter does above.  Allowing you to make sure your
      *   data matches your lookup tables.
      *
      * Usage is a little more complex, but straight forward:
@@ -409,15 +409,15 @@ class Filter
      * @return mixed
      * @access private
      */
-    private function _assertData($value, $extra) 
+    private function _assertData($value, $extra)
     {
         // First break up our $extra array:
         $options = explode(':', $extra);
-        
+
         // Determine what we are doing a lookup on:
         $lookup = Data::${$options[1]};
         $null = (isset($options[2]) && ($options[2] == 'null'));
-        
+
         if ($options[0] == 'keys') {
             // Key lookup
             if (!array_key_exists($value, $lookup)) {
@@ -430,9 +430,8 @@ class Filter
                 $value = $null ? NULL : reset($lookup);
             }
         }
-        
+
         return $value;
     }
-    
+
 }
-?>

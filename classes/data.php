@@ -25,4 +25,3 @@ class Data
         4 => 'Blue',
     );
 }
-?>

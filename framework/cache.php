@@ -19,14 +19,14 @@
  *  * fetch & getDelayed
  *  * setMulti
  *
- *  It's not that it can't be augmented to support some of those.  It's just that we weren't 
+ *  It's not that it can't be augmented to support some of those.  It's just that we weren't
  *   using those yet when the conversion was done, so we didn't bother adding them at the moment.
- * 
+ *
  * @package treb
  * @author Eli White <eli@eliw.com>
  * @return object
  **/
- 
+
 function cache()
 {
     return Cache::getConnection();
@@ -44,19 +44,19 @@ class Cache
 
     // Hold the singleton:
     private static $_singleton = NULL;
-    
+
     /**
      * __construct
      *
      * Making this constructor private, even though it does nothing, to stop someone
      *  from directly instantiating a copy of Cache
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @return void
      * @access public
      **/
     private function __construct() {}
-    
+
     public static function getConnection()
     {
         $cachecfg = config()->cache;
@@ -72,7 +72,7 @@ class Cache
                 self::$_singleton = new CacheConnection($servers, (string)$cachecfg->prefix);
             }
         }
-        
+
         return self::$_singleton;
     }
 }
@@ -92,20 +92,20 @@ class CacheConnection
     private $_local_cache = array(); // Our local cache of data in this instance
     private $_prefix = '';           // What we will prefix all cache keys with
     private $_servers = false;       // Keep track of our servers
-    
+
     // Disallowed endpoints:
     private $_disallowed = array('addByKey', 'appendByKey', 'casByKey', 'deleteByKey', 'getByKey',
         'getDelayed', 'getDelayedByKey', 'getMultiByKey', 'getServerByKey', 'prependByKey',
         'replaceByKey', 'setByKey', 'setMultiByKey', 'cas', 'append', 'prepend', 'setMulti',
         'fetch', 'fetchAll');
-    
+
     /**
      * __construct
      *
      * Make a new CacheConnection.
      *
      * Pass in an array of SimpleXML elements as config as well as a key prefix.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $servers The server config needed
      * @param string $prefix A string to prefix all keys by.
@@ -116,7 +116,7 @@ class CacheConnection
     {
         $this->_prefix = $prefix;
         $this->_servers = $servers;
-       
+
         // Prepare the server list:
         $sarray = array();
         foreach ($servers as $s) {
@@ -131,17 +131,17 @@ class CacheConnection
         $this->_memcache = new Memcached();
         $this->_memcache->setOption(Memcached::OPT_PREFIX_KEY, $prefix);
         //$this->_memcache->setOption(Memcached::OPT_SERIALIZER, Memcached::SERIALIZER_IGBINARY);
-        
+
         // Now add the servers in:
         $this->_memcache->addServers($sarray);
     }
-    
+
     /**
      * __call
      *
      * Generic 'call' functionality to allow any non-specificaly defined
      *  method call to be passed through to the underlying Memcached object.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $name Name of the function we tried to call.
      * @param array $args Array of arguments that were passed.
@@ -162,7 +162,7 @@ class CacheConnection
      * set
      *
      * A passthrough function to _update
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param array $key The key name to save data as
      * @param mixed $value The value to save
@@ -179,7 +179,7 @@ class CacheConnection
      * add
      *
      * A passthrough function to _update
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param array $key The key name to save data as
      * @param mixed $value The value to save
@@ -196,7 +196,7 @@ class CacheConnection
      * replace
      *
      * A passthrough function to _update
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param array $key The key name to save data as
      * @param mixed $value The value to save
@@ -219,7 +219,7 @@ class CacheConnection
      *
      * It also creates and updates the 'local cache' so we don't ask for data twice
      *  from memcached within one PHP instance.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $func The name of the memcached function that was called.
      * @param string $key The key name to save data as
@@ -233,17 +233,17 @@ class CacheConnection
         // Pass through the command to the underlying memcached:
         if ($result = $this->_memcache->{$func}($key, $value, $expire)) {
             // Update the local cache:
-            $this->_local_cache[$key] = $value;                
+            $this->_local_cache[$key] = $value;
         }
 
         return $result;
     }
-    
+
     /**
      * increment
      *
      * A passthrough function to _math
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $key The key name to save data as
      * @param integer $by How much should this be incremented by?
@@ -259,7 +259,7 @@ class CacheConnection
      * decrement
      *
      * A passthrough function to _math
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $key The key name to save data as
      * @param integer $by How much should this be decremented by?
@@ -270,13 +270,13 @@ class CacheConnection
     {
         return $this->_math('decrement', $key, $by);
     }
-    
+
     /**
      * _math
      *
      * Similar to _update but wraps memcached's two mathematical methods:
      *  increment and decrement.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $func The name of the memcached function that was called.
      * @param string $key The key name to do the math on
@@ -284,7 +284,7 @@ class CacheConnection
      * @return integer What's the current value?
      * @access private
      **/
-    private function _math($func, $key, $by = 1) 
+    private function _math($func, $key, $by = 1)
     {
         // Pass through the actual request
         $result = $this->_memcache->{$func}($key, $by);
@@ -296,19 +296,19 @@ class CacheConnection
 
         return $result;
     }
-    
+
     /**
      * delete
      *
      * Similar to _update above, but designed just for 'delete'
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $key The key name to delete
      * @param integer $timeout Should there be a delay in how long it takes?
      * @return boolean Success
      * @access public
      **/
-    public function delete($key, $timeout = 0) 
+    public function delete($key, $timeout = 0)
     {
         // Pass through the actual request
         if ($result = $this->_memcache->delete($key, $timeout)) {
@@ -328,7 +328,7 @@ class CacheConnection
      *  to every single method to say 'don't cache this internally'.  But then realized that this
      *  was cleaner for now, just a way after a potential internal cache hit, to say:  Yeah I
      *  don't need that now.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $key The key name to remove internally
      * @return void
@@ -346,7 +346,7 @@ class CacheConnection
      *  using the local cache, however to fully support multiget, it gets
      *  a weeee bit more complicated.  Especially since it needs to remove prefixing
      *  near the end.
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $key The key name to retrieve.
      * @return mixed The value requested, or an array of values.
@@ -364,10 +364,10 @@ class CacheConnection
                 $this->_local_cache[$key] = $value;
             }
         }
-        
+
         return $value;
     }
-     
+
      /**
       * getMulti
       *
@@ -375,13 +375,13 @@ class CacheConnection
       *  as it needs to look at the array, break out what parts we don't have cached
       *  then rebuild that cache as needed after making appropriate requests.  All while
       *  handing the key prefixes accordingly.
-      * 
+      *
       * @author Eli White <eli@eliw.com>
       * @param array $key An array of keys to be retrieved
       * @return mixed The value requested
       * @access private
       **/
-     private function getMulti(Array $key) 
+     private function getMulti(Array $key)
      {
          // We have an array of keys, the first thing we need to do
          //  is determine how many of these we already have cached locally.
@@ -402,7 +402,7 @@ class CacheConnection
 
          return $values;
      }
-    
+
     /**
      * lock
      *
@@ -421,15 +421,15 @@ class CacheConnection
      *
      * It's up to the code that USES this to determine what it should do when a lock is
      *  not able to be obtained.  That is, whether to forge forward not caring, or to
-     *  handle it's lack of a lock somehow.  (Such as a cron script just dying and not
+     *  handle its lack of a lock somehow.  (Such as a cron script just dying and not
      *  bothering to do any work until it runs again)
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $key The $key you are going to want an exclusive lock on
      * @return boolean Success
      * @access public
      **/
-    public function lock($key, $duration = 1000000) 
+    public function lock($key, $duration = 1000000)
     {
         $delay = 100000; // 100ms, 1/10 of a second
         $attempts = 10;
@@ -437,37 +437,37 @@ class CacheConnection
             // Try to create lock every 1/10th of a second until at max
             $success = $this->_update('add', "{$key}.lock", 1, $duration);
         } while (!$success && $attempts-- && usleep($delay));
-        
+
         // Whether successful or not at this point, we aren't going to halt
         //  execution anymore.  Just proceed:
         return $success;
     }
-    
+
     /**
      * unlock
      *
      * The opposite of above.  Just attempts to remove the lock previously granted:
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @param string $key The $key you are going to want an exclusive lock on
      * @return boolean Success
      * @access public
      **/
-    public function unlock($key) 
+    public function unlock($key)
     {
         return $this->delete("{$key}.lock");
     }
-    
+
     /**
      * sessionString
      *
      * Returns a string, based upon the $config, to be used by the memcached session handling
-     * 
+     *
      * @author Eli White <eli@eliw.com>
      * @return string A memcached Session string
      * @access public
      **/
-    public function sessionString() 
+    public function sessionString()
     {
         // Make an array full of tcp strings:
         $strings = array();
@@ -485,7 +485,7 @@ class CacheConnection
  *
  * Simple way to disable caching, while enabling all methods to still 'work' fine.
  *
- * All public methods need duplicated here currently.  (Could change this in the 
+ * All public methods need duplicated here currently.  (Could change this in the
  *  future to only use a __method, but for now this still allows syntax checking)
  *
  * NOTE: Not bothering to phpdoc each of the methods:
@@ -510,4 +510,3 @@ class DisabledCacheConnection extends CacheConnection
     public function unlock($key) { return false; }
     public function sessionString() { return false; }
 }
-?>

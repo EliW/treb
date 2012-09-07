@@ -12,10 +12,10 @@
 #  to actually hack this to use it for your our situation; however, it's very straight
 #  forward to understand and make said changes.
 #
-# To use, make sure that you have 'svn', 'scp', and 'ssh' all accessible to 
+# To use, make sure that you have 'svn', 'scp', and 'ssh' all accessible to
 #  you as well as /tmp usable as a temp directory.  Then just run the script,
-#  per the $USAGE string below, specifying a target (test, live) as well as 
-#  either a branch, a tag, or the trunk as what is being pushed.  It should 
+#  per the $USAGE string below, specifying a target (test, live) as well as
+#  either a branch, a tag, or the trunk as what is being pushed.  It should
 #  do the rest for you.
 #
 # There are a number of assumptions that this deployment script makes, even given the
@@ -29,7 +29,7 @@
 #  * That you want a set of standard practices, compressing JS/CSS, unless already minified,
 #    to send emails to an address on any TAG push (assuming that a tag means something final),
 #    that you want to make announcements via an IRC bot, etc.
-#  * That you will name configuration files in /config/ of treb, the same as your target types.  
+#  * That you will name configuration files in /config/ of treb, the same as your target types.
 #    So if you have a target of 'live', then you will have a live.config.xml file.
 #  * That this deploys to a directory on the servers of your choosing, but automatically creates
 #    a subdirectory with the name of the 'target', and then makes a unique directory for the deploy
@@ -172,7 +172,7 @@ then
             java -jar "$TMP/$name-$stamp/ops/bin/yuicompressor.jar" "$file" -o "$file"
         fi
     done
-    
+
     echo " Compressing all CSS files …"
     find $TMP/$name-$stamp/web/css -name '*.css' | grep -v '\.min\.css$' | while read file
     do
@@ -218,7 +218,7 @@ done
 
 case "$transport" in
     tar)
-        # Almost the same as above (ok, not really).  Tarballs the whole thing up, then scp's it:
+        # Almost the same as above (ok, not really).  Tarballs the whole thing up, then SCPs it:
         echo " Using tar for transport, creating tarball …"
         tar -cf "$TMP/$name-$stamp.tar" -C "$TMP" "$name-$stamp"
         for host in $servers

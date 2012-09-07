@@ -24,8 +24,8 @@ class Sample extends Model
      **/
     static public function getAll()
     {
-        $table = . self::$_table;
-        
+        $table = self::$_table;
+
         return new Set('Sample', "SELECT id FROM {$table} ORDER BY id ASC");
     }
 
@@ -52,4 +52,3 @@ class Sample extends Model
     }
 
 } // END class
-?>
