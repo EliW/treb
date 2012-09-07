@@ -8,6 +8,6 @@
 <body>
     <h1>Error 404: File not found</h1>
     <p><em>-- Generic Treb Framework error message</em></p>
-    <?php echo H::ifWrap($extra, '<p>'); ?>
+    <?= H::ifWrap($extra, '<p>'); ?>
 </body>
 </html>

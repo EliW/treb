@@ -220,7 +220,7 @@ class Helper
      * To use this, pass it the opening tag, with all parameters how you want it, it handles the
      *  escaping as well as closing the tag for you.
      *
-     * IE:  <?php echo H::wrap($data->errors->name, '<span class="failure">'); ?>
+     * IE:  <?= H::wrap($data->errors->name, '<span class="failure">'); ?>
      *
      * @author Eli White <eli@eliw.com>
      * @param string $text The original text you want wrapped
@@ -254,7 +254,7 @@ class Helper
      *
      * Why?  Because it's much nicer to do this, than to litter the views with samples such
      *  as the following which was happening alot:
-     *  <?php echo $data->errors->name ? H::wrap($data->errors->name, '<span class="failure">') : ''; ?>
+     *  <?= $data->errors->name ? H::wrap($data->errors->name, '<span class="failure">') : ''; ?>
      *
      * This helper allows you, in these cases, to just do ifWrap instead.
      *
