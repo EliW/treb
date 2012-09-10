@@ -52,7 +52,8 @@ class Utility
             //  you do the task you were trying to do.
             // The shorter you set this, the more security you gain against brute force
             //  attacks.  Current time is a compromise.
-            $_SESSION['tokenExpires'] = time() + 14400;
+            $ttl = (int)config()->security->csrf->ttl ?: 14400;
+            $_SESSION['tokenExpires'] = time() + $ttl;
         }
 
         // Return the code, so it can be included in the POST

@@ -129,17 +129,18 @@ abstract class Controller
      **/
     protected function sessionStart()
     {
-        $sessconfig = config()->session;
+        $security = config()->security;
 
         // OK, start the session:
         session_start();
 
-        if (!((int)$sessconfig->disablehijack)) {
+        if (!((int)$security->hijack->disable)) {
+            $cookie = (string)$security->hijack->cookie ?: 'MyVoiceIsMyPassport';
             // If the session is not empty, then verify that anti-hijacking tokens are correct:
             if (!empty($_SESSION)) {
                 $token = $this->_hijackToken();
                 $sh = empty($_SESSION['hijack']) ? false : $_SESSION['hijack'];
-                $ch = Cookie::get('MyVoiceIsMyPassport');
+                $ch = Cookie::get($cookie);
 
                 if (!$sh || !$ch || ($sh != $ch) || ($sh != $token)) {
                     // Looks like a hijack, go through the process of giving them a brand new shiny
@@ -147,7 +148,7 @@ abstract class Controller
                     session_write_close();
                     session_id(md5(time()));
                     session_start();
-                    Cookie::delete('MyVoiceIsMyPassport');
+                    Cookie::delete($cookie);
                     Log::write('hijack', array($sh, $ch, $token, Server::getAgent()), Log::WARNING);
                     // If Ajax, 403 error, otherwise be nice and redirect to homepage:
                     if (Server::isAjax()) {
@@ -163,7 +164,7 @@ abstract class Controller
                 $_SESSION['started'] = $now->format(DateTime::ISO8601);
                 $token = $this->_hijackToken();
                 $_SESSION['hijack'] = $token;
-                Cookie::set('MyVoiceIsMyPassport', $token);
+                Cookie::set($cookie, $token);
             }
         }
     }
@@ -180,11 +181,15 @@ abstract class Controller
     private function _hijackToken()
     {
         // Use User Agent, and a Salt, to generate a token
-        //  We might want to enhance this later, adding in the user_id if the user is
+        //  You might want to enhance this later, adding in the user_id if the user is
         //  logged in, but then we have to regenerate this on login/logout, and that logic is
         //  elsewhere.   We do use a session timestamp though also, so there is something 'unique'
         $token = Server::getAgent();
-        $token .= '| Heather & Ramsey |'; // Salt - Change this to make your instance more secure
+        if (!($salt = (string)config()->security->hijack->salt)) {
+            $salt = "Someone didn't configure their salt!";
+            trigger_error("Anti-hijack salt left blank in site config file!", E_USER_WARNING);
+        }
+        $token .= "|{$salt}|";
         $token .= $_SESSION['started'];   // Random unique thing to this session
         return sha1($token);
     }
