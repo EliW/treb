@@ -39,22 +39,26 @@ class Config
      **/
     private function __construct()
     {
+        //  NOTE: Currently this yes, will parse the config.xml on every pageload.
+        //   (Well, every load where config() is called).  For a typical website this isn't
+        //   a huge burden.  If it becomes that, you could refactor this to parse once and
+        //   store the parsed version in APC, for immediate access.  However you then need
+        //   to deal with having a way to check for .xml file changes, and/or manually push
+        //   a reparse if you need to change the config.
+
         // Works by parsing a 'config.xml' from a 'config' directory of the application.
-        if (!file_exists(ROOT . '/config/config.xml')) {
-            die("Site Configuration Missing");
+        if (!($xml = file_get_contents(ROOT . '/config/config.xml'))) {
+            die("Cannot read site configuration file!");
         }
 
-        // Parse the XML into a configuration.
-        //  NOTE: If performance becomes a concern (currently it's not) then the parsed
-        //  version should be cached in APC, and either a manual 'reparse' mechanism
-        //  put in place, or a stat check happen each time for changes.  But for now,
-        //  that's overkill. (Also it could at that point be smart and ignore a bad
-        //  config change that was made and keep running)
-        libxml_use_internal_errors(true);
-        $this->_data = simplexml_load_file(ROOT . '/config/config.xml');
-        if ($this->_data === FALSE) {
-            die("Configuration Unparseable");
-        }
+        // Parse the XML into a configuration - Switch off errors & entities, and revert to 
+        //  original settings afterwards to not affect any other code on the site.
+        $error_state = libxml_use_internal_errors(true);
+        $entity_state = libxml_disable_entity_loader(true);
+        $this->_data = simplexml_load_string($xml);
+        if ($this->_data === FALSE) { die("Configuration Unparseable"); }
+        libxml_use_internal_errors($error_state);
+        libxml_disable_entity_loader($entity_state);
     }
 
     /**
