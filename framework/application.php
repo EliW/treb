@@ -74,29 +74,29 @@ class Application
         // Nominally normalize code, worst case default to a good-ole-500
         $code = (int)$code;
         if ($code < 100 || $code >= 600) { $code = 500; }
+        
+        // Regardless of any custom effort later, set the error code now:
+        http_response_code($code);
 
+        // Now for specific codes, do some custom work w/ $extra
         switch ($code) {
             case 301:
-                $path = $extra ?: '/';
-                header('HTTP/1.0 301 Moved Permanently');
-                header("Location: {$path}");
-                exit;
             case 302:
-                $path = $extra ?: '/';
-                header('HTTP/1.0 302 Found');
+                // Redirect, $extra is the Location path:
+                $path = $extra ? strtr($extra, "\r\n", '  ') : '/';
                 header("Location: {$path}");
                 exit;
             case 401:
-                $realm = $extra ?: 'Treb Framework';
+                // Authorization request, $extra is the realm:
+                $realm = $extra ? strtr($extra, "\r\n\"", '   ') : 'Treb Framework';
                 header("WWW-Authenticate: Basic realm=\"{$realm}\"");
-                header('HTTP/1.0 401 Unauthorized');
                 die('Unauthorized access');
             case 403:
-                header('HTTP/1.0 403 Forbidden');
+                // 403, denied, just issue the text-error given, or a generic response.
                 die($extra ?: 'Request Denied');
             default:
                 // Set the header, attempt to include the appropriate file, then just die.
-                header("HTTP/1.0 {$code}");
+                // NOTE:  $extra will be available in the .php file
                 include ROOT . "/errors/{$code}.php";
                 die;
         }

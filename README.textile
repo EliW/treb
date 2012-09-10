@@ -26,7 +26,7 @@ h2. Technology
 
 Treb is not 'well architected' by modern definitions of this; it wasn't meant to be.  It was meant to be a simple, functional system.  It doesn't do dependency injection, it doesn't use namespaces, it uses the singleton & multiton patterns in specifically chosen places and it has zero tests.  It simply was made as a simple, useable, and extendable framework.
 
-It does however require PHP 5.3+, as it uses some advanced aspects of PHP, and will move to PHP 5.4 in the near future.
+It does however require PHP 5.4, as it uses some advanced features of later PHP versions.
 
 h2. Features
 
