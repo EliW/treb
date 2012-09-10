@@ -12,6 +12,17 @@
         <handler>files</handler>
         <disablehijack>0</disablehijack>
     </session>
+    <!-- Various security configuration -->
+    <security>
+        <hijack>
+            <disable>0</disable>  <!-- Disable hijack protection? (local testing perhaps) -->
+            <salt></salt>  <!-- Add in a salt (any string) for protection! -->
+            <cookie>MyVoiceIsMyPassport</cookie>
+        </hijack>
+        <csrf>
+            <ttl>14400</ttl> <!-- Lifespan of CSRF tokens in seconds -->
+        </csrf>
+    </security>
     <!-- Cookies -->
     <cookies>
         <prefix>local</prefix>
