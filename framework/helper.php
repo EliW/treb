@@ -117,7 +117,7 @@ class Helper
             // At this point, if the value is actually an array, we have an opt-group situation:
             if (is_array($v)) {
                 // Recursion time!
-                $html .= "<optgroup label=\"{$k}\">";
+                $html .= '<optgroup label="' . self::escape($k) . '">';
                 $html .= self::selectOptions($v, $selected, $keys);
                 $html .= '</optgroup>';
             } else {
