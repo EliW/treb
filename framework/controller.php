@@ -209,10 +209,11 @@ abstract class Controller
         //  This stops errors from happening in the code if you put debugging statements
         //  in, for example:
         if (!headers_sent()) {
+            $charset = trim((string)config()->env->charset);
             // Based upon some potential view-configuration, handle headers for us:
             switch ($this->mode) {
                 case 'html':
-                    header('Content-Type: text/html; charset=utf-8');
+                    header('Content-Type: text/html; charset='.$charset);
                     if ($this->prevent_clickjack) {
                         // Clickjack Protection, rough & absolute for now
                         //  You still need to add a JS/CSS solution as well for full protection
@@ -220,22 +221,22 @@ abstract class Controller
                     }
                     break;
                 case 'text':
-                    header('Content-Type: text/plain; charset=utf-8');
+                    header('Content-Type: text/plain; charset='.$charset);
                     break;
                 case 'json':
-                    header('Content-Type: application/json; charset=utf-8');
+                    header('Content-Type: application/json; charset='.$charset);
                     break;
                 case 'rss':
-                    header('Content-Type: application/rss+xml; charset=utf-8');
+                    header('Content-Type: application/rss+xml; charset='.$charset);
                     break;
                 case 'xml':
-                    header('Content-Type: text/xml; charset=utf-8');
+                    header('Content-Type: text/xml; charset='.$charset);
                     break;
                 case 'png':
                     header('Content-Type: image/png');
                     break;
                 case 'php':
-                    header('Content-Type: application/vnd.php.serialized; charset=utf-8');
+                    header('Content-Type: application/vnd.php.serialized; charset='.$charset);
                     break;
 
             }

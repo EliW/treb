@@ -5,6 +5,7 @@
         <development>1</development>
         <release>development</release>
         <version>%%VERSION%%</version>
+        <charset>UTF-8</charset>
     </env>
     <!-- Sessions config -->
     <session>
@@ -33,7 +34,7 @@
         <pools>
             <read>
                 <server>
-                    <dsn>mysql:host=127.0.0.1;port=3306;dbname=example</dsn>
+                    <dsn>mysql:host=127.0.0.1;port=3306;dbname=example;charset=utf8</dsn>
                     <user>exampleuser</user>
                     <pass>examplepass</pass>
                 </server>

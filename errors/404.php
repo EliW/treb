@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=<?= (string)config()->env->charset ?>" />
     <title>Treb - We couldn't find it!</title>
     <link rel="icon" href="/favicon.ico" />
 </head>

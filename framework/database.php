@@ -136,9 +136,6 @@ class DatabaseConnection
     public function __construct(PDO $connection)
     {
         $this->_db = $connection;
-
-        // Upon socket creation, ensure we are talking UTF-8
-        $connection->exec("SET NAMES 'utf8'");
     }
 
     /**

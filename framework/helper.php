@@ -33,8 +33,13 @@ class Helper
      **/
     public static function escape($value, $quotes = true)
     {
+        // Static cache of charset:
+        static $charset = NULL;
+        if (!$charset) { $charset = trim((string)config()->env->charset); }
+        
+        // Now handle the quoting:
         $quotes = $quotes ? ENT_QUOTES : ENT_NOQUOTES;
-        return htmlentities($value, $quotes, 'UTF-8', FALSE);
+        return htmlspecialchars($value, $quotes | ENT_HTML5, $charset, FALSE);
     }
 
     /**
@@ -50,7 +55,11 @@ class Helper
      **/
     public static function xmlify($value)
     {
-        return iconv('UTF-8', 'UTF-8//IGNORE', preg_replace("#[\\x00-\\x1f]#msi", ' ',
+        // Static cache of charset:
+        static $charset = NULL;
+        if (!$charset) { $charset = trim((string)config()->env->charset); }
+        
+        return iconv($charset, $charset.'//IGNORE', preg_replace("#[\\x00-\\x1f]#msi", ' ',
             str_replace('&', '&amp;', $value)));
     }
 
