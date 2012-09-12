@@ -35,6 +35,11 @@ class HomeController extends Controller
      * @return void
      * @access public
      **/
+    protected $expect_home = array(
+        'get' => array(
+            'test' => 'string'
+        )
+    );
     public function execHome()
     {
         // Set a title for us:
@@ -42,6 +47,7 @@ class HomeController extends Controller
 
         // Set some data we will use in the view:
         $this->data->ip = Server::getIP();
+        $this->data->test = $this->args->get['test'];
     }
 
 } // END class
