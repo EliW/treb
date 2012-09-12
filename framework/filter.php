@@ -309,17 +309,35 @@ class Filter
      * NULL if no value was passed in at all.
      * FALSE if the value failed the assertion.
      *
+     * The second parameter that can be specified, is a CSV of allowed schemes.
+     *  If not specified, it defaults to http & https only, change this if you want
+     *  to allow more or less, such as:
+     * url:http,https,ftp,gopher
+     *
      * @author Eli White <eli@eliw.com>
      * @param mixed $value Value to be asserted.
+     * @param mixed $schemes Schemes to be allowed
      * @return string
      * @access private
      **/
-    private function _assertUrl($value)
+    private function _assertUrl($value, $schemes = NULL)
     {
         if (empty($value)) {
             $value = NULL;
         } elseif (!filter_var($value, FILTER_VALIDATE_URL)) {
             $value = FALSE;
+        } else {
+            // Check the schemes:  Break the list up into an array:
+            if ($schemes === NULL) {
+                $check = array('http', 'https');
+            } else {
+                $check = explode(',', $schemes);
+            }
+
+            if (!in_array(parse_url($value, PHP_URL_SCHEME), $check)) {
+                $value = FALSE;
+            }
+            
         }
         return $value;
     }
