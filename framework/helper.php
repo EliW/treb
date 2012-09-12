@@ -66,35 +66,19 @@ class Helper
     /**
      * jsify
      *
-     * Similar to above, but now makes output specifically prepared to be injected int
-     *  a javascript variable.  Which is a different beast again.
+     * This method is designed to take a PHP variable/value, and prepare it for injection
+     *  into a javascript variable, allowing you to pass information from PHP to JS.
+     *
+     * An example use case would be in a view:
+     *  var name = <?= H::jsify($name) ?>;
      *
      * @author Eli White <eli@eliw.com>
      * @param mixed $value The value to be sanitized for output.
+     * @param integer $options Bitmask of various JSON encode options (defaults safe)
      * @return string Escaped Value
      * @access public
      **/
-    public static function jsify($value)
-    {
-        return str_replace(array("\r\n","\r","\n"),array("\n","\n","\\\n"),addslashes($value));
-    }
-
-    /**
-     * json
-     *
-     * Similar to jsify above, but instead of just escaping the 'content' to be injected,
-     *  this version actually takes a whole array or object and makes it JS-ready.
-     *
-     * For now just uses json_encode to do this, but unless you tell it otherwise, it defaults
-     *  to a very safe set of parameters.
-     *
-     * @author Eli White <eli@eliw.com>
-     * @param mixed $var The variable (array or object probably) to translate into JS
-     * @param integer $options Bitmask of various JSON encode options (defaults sane)
-     * @return string The JSON representation of this data.
-     * @access public
-     */
-    public static function json($var, $options = NULL)
+    public static function jsify($value, $options = NULL)
     {
         // If $options is NULL (vs 0), default to an extremely safe set.
         //  If 0 is passed in, you turn everything off:
@@ -102,6 +86,25 @@ class Helper
             $options = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE;
         }
 
+        return json_encode($var, $options);
+    }
+
+    /**
+     * json
+     *
+     * Very similar to above, but actually more designed for when you are returning an entire
+     *  json response, instead of injecting it into HTML.
+     *
+     * Just a bare wrapper around json_encode, without changing any parameters.
+     *
+     * @author Eli White <eli@eliw.com>
+     * @param mixed $var The variable (array or object probably) to translate into JS
+     * @param integer $options Bitmask of various JSON encode options
+     * @return string The JSON representation of this data.
+     * @access public
+     */
+    public static function json($var, $options = 0)
+    {
         return json_encode($var, $options);
     }
 
