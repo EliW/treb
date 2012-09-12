@@ -85,17 +85,24 @@ class Helper
      * Similar to jsify above, but instead of just escaping the 'content' to be injected,
      *  this version actually takes a whole array or object and makes it JS-ready.
      *
-     * For now just uses json_encode to do this, but the whole idea is that we might need
-     *  to 'augment' this in the future.
+     * For now just uses json_encode to do this, but unless you tell it otherwise, it defaults
+     *  to a very safe set of parameters.
      *
      * @author Eli White <eli@eliw.com>
      * @param mixed $var The variable (array or object probably) to translate into JS
+     * @param integer $options Bitmask of various JSON encode options (defaults sane)
      * @return string The JSON representation of this data.
      * @access public
      */
-    public static function json($var)
+    public static function json($var, $options = NULL)
     {
-        return json_encode($var);
+        // If $options is NULL (vs 0), default to an extremely safe set.
+        //  If 0 is passed in, you turn everything off:
+        if ($options === NULL) {
+            $options = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE;
+        }
+
+        return json_encode($var, $options);
     }
 
     /**
