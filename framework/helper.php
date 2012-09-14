@@ -250,6 +250,10 @@ class Helper
      **/
     public static function wrap($text, $tag, $escape = TRUE)
     {
+        // Do a little sanity check & cleanup on the tag:
+        $tag = trim($tag);
+        if (substr($tag,-1) != '>') { $tag .= '>'; }
+        
         // Determine the closing tag, based upon the opening one:
         preg_match('/^<([^ >]+)/', $tag, $matches);
         $closing = "</{$matches[1]}>";
