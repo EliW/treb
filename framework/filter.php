@@ -443,8 +443,9 @@ class Filter
                 $value = $null ? NULL : key($lookup);
             }
         } else {
-            // Value lookup:
-            if (!in_array($value, $lookup)) {
+            // Value lookup - Use array flip and key_exists instead of in_array, because
+            //  in_array would allow '12asdf' to match (int)12, but key checking doesn't.
+            if (!array_key_exists($value, array_flip($lookup))) {
                 $value = $null ? NULL : reset($lookup);
             }
         }
