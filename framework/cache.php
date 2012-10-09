@@ -24,14 +24,7 @@
  *
  * @package treb
  * @author Eli White <eli@eliw.com>
- * @return object
  **/
-
-function cache()
-{
-    return Cache::getConnection();
-}
-
 class Cache
 {
     // Make some constants for easy verbal cache times:

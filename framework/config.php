@@ -8,13 +8,7 @@
  *
  * @package treb
  * @author Eli White <eli@eliw.com>
- * @return SimpleXML
  **/
-function config()
-{
-    return Config::get();
-}
-
 class Config
 {
     private static $_object; // Holds the singleton

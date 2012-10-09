@@ -9,6 +9,7 @@
  * @package treb
  * @author Eli White <eli@eliw.com>
  **/
+require_once 'creators.php';
 class Application
 {
     // Hold the main directory that all items are stored in:
