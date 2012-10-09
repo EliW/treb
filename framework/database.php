@@ -15,15 +15,7 @@
  *
  * @package treb
  * @author Eli White <eli@eliw.com>
- * @param string $pool
- * @return PDO
  **/
-
-function db($pool = false)
-{
-    return Database::getConnection($pool);
-}
-
 class Database
 {
     // Private array for holding the multitons
@@ -56,7 +48,7 @@ class Database
      * @return DatabaseConnection
      * @access public
      **/
-    public static function getConnection($pool = false)
+    public static function getConnection($pool = NULL)
     {
         // Read in the configuration once, default to he DB section:
         $config = config()->db;
